@@ -99,28 +99,14 @@
             overflow: hidden;
         }
 
-        .hero::before {
-            content: '';
+        #hero-bg {
             position: absolute;
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
-            border-radius: 50%;
-            top: -200px;
-            right: -200px;
-            animation: float 8s ease-in-out infinite;
-        }
-
-        .hero::after {
-            content: '';
-            position: absolute;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%);
-            border-radius: 50%;
-            bottom: -150px;
-            left: -150px;
-            animation: float 10s ease-in-out infinite;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
         }
 
         .hero-content {
@@ -412,6 +398,7 @@
 
     <!-- Hero Section -->
     <section class="hero" id="home">
+        <canvas id="hero-bg"></canvas>
         <div class="hero-content">
             <h1>Pramod Gautam</h1>
             <p class="subtitle">Full Stack Developer | Spring Boot | React</p>
@@ -516,6 +503,147 @@
             <p>&copy; 2026 Pramod Gautam. All rights reserved.</p>
         </div>
     </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // ── Three.js Hero Background ──────────────────────────────────────────
+        (function () {
+            const canvas = document.getElementById('hero-bg');
+            const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setClearColor(0x000000, 0);
+
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 200);
+            camera.position.z = 40;
+
+            function resize() {
+                const hero = document.getElementById('home');
+                const w = hero.clientWidth;
+                const h = hero.clientHeight;
+                renderer.setSize(w, h);
+                camera.aspect = w / h;
+                camera.updateProjectionMatrix();
+            }
+            resize();
+            window.addEventListener('resize', resize);
+
+            // Palette: blues, purples, cyans, magentas
+            const palette = [0x3b82f6, 0x8b5cf6, 0xec4899, 0x06b6d4, 0xa78bfa, 0x38bdf8, 0xf472b6];
+
+            // ── Particle Field ────────────────────────────────────────────────
+            const PARTICLE_COUNT = 1800;
+            const pPositions = new Float32Array(PARTICLE_COUNT * 3);
+            const pColors = new Float32Array(PARTICLE_COUNT * 3);
+            for (let i = 0; i < PARTICLE_COUNT; i++) {
+                pPositions[i * 3]     = (Math.random() - 0.5) * 120;
+                pPositions[i * 3 + 1] = (Math.random() - 0.5) * 80;
+                pPositions[i * 3 + 2] = (Math.random() - 0.5) * 60;
+                const c = new THREE.Color(palette[Math.floor(Math.random() * palette.length)]);
+                pColors[i * 3]     = c.r;
+                pColors[i * 3 + 1] = c.g;
+                pColors[i * 3 + 2] = c.b;
+            }
+            const pGeom = new THREE.BufferGeometry();
+            pGeom.setAttribute('position', new THREE.BufferAttribute(pPositions, 3));
+            pGeom.setAttribute('color', new THREE.BufferAttribute(pColors, 3));
+            const pMat = new THREE.PointsMaterial({ size: 0.35, vertexColors: true, transparent: true, opacity: 0.7 });
+            scene.add(new THREE.Points(pGeom, pMat));
+
+            // ── Colorful Wireframe 3D Shapes ──────────────────────────────────
+            const geoFactories = [
+                () => new THREE.IcosahedronGeometry(2.2, 0),
+                () => new THREE.OctahedronGeometry(2.4),
+                () => new THREE.TetrahedronGeometry(2.6),
+                () => new THREE.TorusGeometry(1.8, 0.5, 7, 14),
+                () => new THREE.TorusKnotGeometry(1.4, 0.4, 64, 8),
+                () => new THREE.DodecahedronGeometry(2.0),
+            ];
+
+            const meshObjects = [];
+            for (let i = 0; i < 22; i++) {
+                const geom = geoFactories[Math.floor(Math.random() * geoFactories.length)]();
+                const color = palette[Math.floor(Math.random() * palette.length)];
+                const mat = new THREE.MeshBasicMaterial({
+                    color,
+                    wireframe: true,
+                    transparent: true,
+                    opacity: Math.random() * 0.35 + 0.15,
+                });
+                const mesh = new THREE.Mesh(geom, mat);
+                mesh.position.set(
+                    (Math.random() - 0.5) * 90,
+                    (Math.random() - 0.5) * 60,
+                    (Math.random() - 0.5) * 30 - 5
+                );
+                mesh.rotation.set(
+                    Math.random() * Math.PI * 2,
+                    Math.random() * Math.PI * 2,
+                    Math.random() * Math.PI * 2
+                );
+                const scale = Math.random() * 1.2 + 0.6;
+                mesh.scale.setScalar(scale);
+                scene.add(mesh);
+                meshObjects.push({
+                    mesh,
+                    rx: (Math.random() - 0.5) * 0.008,
+                    ry: (Math.random() - 0.5) * 0.008,
+                    rz: (Math.random() - 0.5) * 0.005,
+                    floatAmp: Math.random() * 1.5 + 0.5,
+                    floatSpeed: Math.random() * 0.4 + 0.2,
+                    floatOffset: Math.random() * Math.PI * 2,
+                    baseY: mesh.position.y,
+                });
+            }
+
+            // ── Soft ambient glow planes (additive color blobs) ───────────────
+            const blobData = [
+                { color: 0x3b82f6, x: -20, y: 10, z: -15 },
+                { color: 0x8b5cf6, x: 20,  y: -8, z: -20 },
+                { color: 0x06b6d4, x: 0,   y: -15, z: -25 },
+            ];
+            blobData.forEach(({ color, x, y, z }) => {
+                const g = new THREE.SphereGeometry(14, 16, 16);
+                const m = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.055 });
+                const sphere = new THREE.Mesh(g, m);
+                sphere.position.set(x, y, z);
+                scene.add(sphere);
+            });
+
+            // ── Mouse parallax ────────────────────────────────────────────────
+            let mx = 0, my = 0;
+            document.addEventListener('mousemove', e => {
+                mx = (e.clientX / window.innerWidth  - 0.5) * 2;
+                my = (e.clientY / window.innerHeight - 0.5) * 2;
+            });
+
+            // ── Render loop ───────────────────────────────────────────────────
+            let t = 0;
+            function animate() {
+                requestAnimationFrame(animate);
+                t += 0.01;
+
+                // Subtle camera drift on mouse
+                camera.position.x += (mx * 3 - camera.position.x) * 0.02;
+                camera.position.y += (-my * 2 - camera.position.y) * 0.02;
+                camera.lookAt(scene.position);
+
+                // Rotate particles slowly
+                scene.children[0].rotation.y = t * 0.03;
+
+                // Animate each shape
+                meshObjects.forEach(o => {
+                    o.mesh.rotation.x += o.rx;
+                    o.mesh.rotation.y += o.ry;
+                    o.mesh.rotation.z += o.rz;
+                    o.mesh.position.y = o.baseY + Math.sin(t * o.floatSpeed + o.floatOffset) * o.floatAmp;
+                });
+
+                renderer.render(scene, camera);
+            }
+            animate();
+        })();
+    </script>
 
     <script>
         // Smooth scroll for navigation links
