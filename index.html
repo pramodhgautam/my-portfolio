@@ -3,7 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pramod Gautam - Full Stack Developer</title>
+    <title>Pramod Gautam - Full Stack Developer | Spring Boot & React</title>
+    <meta name="description" content="Pramod Gautam — Full Stack Developer from Kathmandu, Nepal. Specializing in Spring Boot, React, Java, and modern web technologies. View my projects and get in touch.">
+    <meta name="keywords" content="Pramod Gautam, Full Stack Developer, Spring Boot, React, Java, Web Developer, Nepal, Kathmandu">
+    <meta name="author" content="Pramod Gautam">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#0f172a">
+    <link rel="canonical" href="https://pramodgautam-portfolio.vercel.app/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Pramod Gautam - Full Stack Developer">
+    <meta property="og:description" content="Full Stack Developer from Kathmandu, Nepal. Specializing in Spring Boot, React, and modern web technologies.">
+    <meta property="og:url" content="https://pramodgautam-portfolio.vercel.app/">
+    <meta property="og:site_name" content="Pramod Gautam Portfolio">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Pramod Gautam - Full Stack Developer">
+    <meta name="twitter:description" content="Full Stack Developer from Kathmandu, Nepal. Specializing in Spring Boot, React, and modern web technologies.">
+
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Pramod Gautam",
+        "url": "https://pramodhgautam.github.io/my-portfolio/",
+        "jobTitle": "Full Stack Developer",
+        "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Kathmandu",
+            "addressCountry": "NP"
+        },
+        "sameAs": [
+            "https://github.com/pramodhgautam/",
+            "https://www.linkedin.com/in/pramodhgautam/"
+        ],
+        "knowsAbout": ["Java", "Spring Boot", "React", "JavaScript", "REST APIs", "PostgreSQL"]
+    }
+    </script>
     <style>
         * {
             margin: 0;
@@ -22,7 +64,7 @@
         }
 
         html {
-            scroll-behavior: smooth
+            scroll-behavior: smooth;
             scroll-padding-top: 80px;
         }
 
@@ -76,8 +118,39 @@
             font-weight: 500;
         }
 
-        nav a:hover {
+        nav a:hover,
+        nav a.active {
             color: var(--accent-bright);
+        }
+
+        /* Hamburger Menu */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 4px;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 25px;
+            height: 2px;
+            background: var(--text);
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+
+        .hamburger.open span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+        .hamburger.open span:nth-child(2) {
+            opacity: 0;
+        }
+        .hamburger.open span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
         }
 
         /* Main Container */
@@ -233,6 +306,7 @@
             transition: all 0.3s;
             position: relative;
             overflow: hidden;
+            opacity: 0;
         }
 
         .project-card::before {
@@ -359,8 +433,26 @@
                 font-size: 1.2rem;
             }
 
+            .hamburger {
+                display: flex;
+            }
+
             nav ul {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                flex-direction: column;
+                background: rgba(15, 23, 42, 0.98);
+                backdrop-filter: blur(10px);
+                padding: 1.5rem 2rem;
                 gap: 1rem;
+                border-bottom: 1px solid var(--border);
+                display: none;
+            }
+
+            nav ul.open {
+                display: flex;
             }
 
             .about-grid {
@@ -387,6 +479,11 @@
     <nav>
         <div class="container">
             <div class="logo">PG</div>
+            <button class="hamburger" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
             <ul>
                 <li><a href="#home">Home</a></li>
                 <li><a href="#about">About</a></li>
@@ -486,10 +583,10 @@
                     <a href="mailto:pramodh2021@gmail.com" class="contact-link">
                         📧 Email
                     </a>
-                    <a href="https://github.com/pramodhgautam/" target="_blank" class="contact-link">
+                    <a href="https://github.com/pramodhgautam/" target="_blank" rel="noopener noreferrer" class="contact-link">
                         💻 GitHub
                     </a>
-                    <a href="https://www.linkedin.com/in/pramodhgautam/" target="_blank" class="contact-link">
+                    <a href="https://www.linkedin.com/in/pramodhgautam/" target="_blank" rel="noopener noreferrer" class="contact-link">
                         💼 LinkedIn
                     </a>
                 </div>
@@ -678,6 +775,39 @@
         document.querySelectorAll('.project-card').forEach(card => {
             observer.observe(card);
         });
+
+        // Hamburger menu toggle
+        const hamburger = document.querySelector('.hamburger');
+        const navMenu = document.querySelector('nav ul');
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('open');
+            navMenu.classList.toggle('open');
+        });
+        // Close menu when a link is clicked
+        navMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('open');
+                navMenu.classList.remove('open');
+            });
+        });
+
+        // Active nav link highlighting on scroll
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('nav a[href^="#"]');
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const top = section.offsetTop - 120;
+                if (scrollY >= top) current = section.getAttribute('id');
+            });
+            navLinks.forEach(link => {
+                link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+            });
+        });
     </script>
+
+    <!-- GoatCounter Analytics (free, privacy-friendly, no cookies) -->
+    <script data-goatcounter="https://pramodgautam.goatcounter.com/count"
+            async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
