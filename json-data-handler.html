@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://pramodgautam.goatcounter.com; connect-src 'self' https://pramodgautam.goatcounter.com; font-src 'self';">
+    <title>JSON Data Handler — Pramod Gautam</title>
+    <meta name="description" content="Comprehensive guide for handling JSON in Java Spring Boot 17. Covers deserialization, serialization, nested objects, and error handling with practical examples.">
+    <meta name="author" content="Pramod Gautam">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#0f172a">
+
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0f172a;
+            --secondary: #1e293b;
+            --accent: #3b82f6;
+            --accent-bright: #60a5fa;
+            --text: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --border: #334155;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 80px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--primary) 0%, #0f0f1e 100%);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem 2rem;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border);
+        }
+
+        nav .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-bright) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        nav ul {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.3s;
+            font-weight: 500;
+        }
+
+        nav a:hover {
+            color: var(--accent-bright);
+        }
+
+        /* Hamburger Menu */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 4px;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 25px;
+            height: 2px;
+            background: var(--text);
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+
+        .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+        .hamburger.open span:nth-child(2) { opacity: 0; }
+        .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Hero */
+        .hero {
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding-top: 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            animation: slideUp 1s ease-out;
+        }
+
+        .hero-eyebrow {
+            font-size: 0.95rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent-bright);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--accent-bright) 0%, var(--text) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 900;
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        .hero-tags {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+
+        .hero-tag {
+            background: var(--secondary);
+            padding: 0.4rem 1.1rem;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            color: var(--accent-bright);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Sections */
+        section {
+            padding: 5rem 2rem;
+        }
+
+        section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 2.5rem;
+            text-align: center;
+            background: linear-gradient(135deg, var(--accent-bright) 0%, var(--text) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Overview */
+        .overview-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: start;
+        }
+
+        .overview-text p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            margin-bottom: 1.25rem;
+        }
+
+        /* Feature cards */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .feature-card {
+            background: var(--secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.75rem;
+            transition: all 0.3s;
+            opacity: 0;
+        }
+
+        .feature-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-6px);
+            box-shadow: 0 16px 36px rgba(59, 130, 246, 0.18);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.15rem;
+            color: var(--accent-bright);
+            margin-bottom: 0.6rem;
+        }
+
+        .feature-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* Code sections */
+        .code-section {
+            background: var(--secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 2.5rem;
+        }
+
+        .code-section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            background: rgba(59, 130, 246, 0.06);
+        }
+
+        .code-section-header h3 {
+            font-size: 1.05rem;
+            color: var(--accent-bright);
+            font-weight: 600;
+        }
+
+        .code-lang {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            background: var(--primary);
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+        }
+
+        pre {
+            padding: 1.5rem;
+            overflow-x: auto;
+            font-size: 0.88rem;
+            line-height: 1.7;
+            background: #0a0f1e;
+        }
+
+        code {
+            font-family: 'Consolas', 'Courier New', monospace;
+            color: #e2e8f0;
+        }
+
+        /* Syntax highlight colours */
+        .kw  { color: #93c5fd; }   /* keyword / annotation */
+        .cls { color: #67e8f9; }   /* class / type name */
+        .str { color: #86efac; }   /* string */
+        .cmt { color: #64748b; font-style: italic; } /* comment */
+        .num { color: #fca5a5; }   /* number */
+        .fn  { color: #c4b5fd; }   /* method / function */
+
+        /* Steps list */
+        .steps-list {
+            list-style: none;
+            counter-reset: step-counter;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .steps-list li {
+            counter-increment: step-counter;
+            display: flex;
+            align-items: flex-start;
+            gap: 1.25rem;
+            background: var(--secondary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.25rem 1.5rem;
+        }
+
+        .steps-list li::before {
+            content: counter(step-counter);
+            flex-shrink: 0;
+            width: 2rem;
+            height: 2rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-bright) 100%);
+            color: white;
+            font-weight: 700;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+
+        .steps-list li div strong {
+            display: block;
+            color: var(--accent-bright);
+            margin-bottom: 0.25rem;
+        }
+
+        .steps-list li div span {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* Back button */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.75rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-bright) 100%);
+            color: white;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 32px rgba(59, 130, 246, 0.4);
+        }
+
+        .cta-center {
+            text-align: center;
+            padding-top: 1rem;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--secondary);
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border);
+        }
+
+        /* Animations */
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            html { scroll-padding-top: 70px; }
+
+            h1 { font-size: 2.2rem; }
+
+            .hamburger { display: flex; }
+
+            nav ul {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                flex-direction: column;
+                background: rgba(15, 23, 42, 0.98);
+                backdrop-filter: blur(10px);
+                padding: 1.5rem 2rem;
+                gap: 1rem;
+                border-bottom: 1px solid var(--border);
+                display: none;
+            }
+
+            nav ul.open { display: flex; }
+
+            .overview-grid { grid-template-columns: 1fr; }
+
+            section { padding: 3.5rem 1.5rem; }
+
+            section h2 { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="container">
+            <a href="index.html" class="logo">PG</a>
+            <button class="hamburger" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+            <ul>
+                <li><a href="index.html#home">Home</a></li>
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="index.html#projects">Projects</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-content">
+            <p class="hero-eyebrow">Featured Project</p>
+            <h1>JSON Data Handler</h1>
+            <p class="subtitle">A comprehensive guide for handling JSON in Java Spring Boot 17 — covering serialization, deserialization, nested objects, and robust error handling with practical examples.</p>
+            <div class="hero-tags">
+                <span class="hero-tag">Java 17</span>
+                <span class="hero-tag">Spring Boot</span>
+                <span class="hero-tag">JSON</span>
+                <span class="hero-tag">Jackson</span>
+                <span class="hero-tag">Tutorial</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Overview -->
+    <section id="overview">
+        <div class="container">
+            <h2>Project Overview</h2>
+            <div class="overview-grid">
+                <div class="overview-text">
+                    <p>This project demonstrates best practices for working with JSON data in a Spring Boot 17 application using the Jackson library. It serves as both a reference guide and a runnable example repository.</p>
+                    <p>Whether you're building REST APIs that consume third-party JSON feeds or exposing your own endpoints, this guide walks through every common scenario you'll encounter in real-world development.</p>
+                    <p>Each section includes a working code snippet, an explanation of the Jackson annotations involved, and notes on common pitfalls to avoid.</p>
+                </div>
+                <div>
+                    <ul class="steps-list">
+                        <li>
+                            <div>
+                                <strong>JSON Deserialization</strong>
+                                <span>Map raw JSON strings and HTTP request bodies to Java POJOs using <code>@JsonProperty</code> and <code>ObjectMapper</code>.</span>
+                            </div>
+                        </li>
+                        <li>
+                            <div>
+                                <strong>JSON Serialization</strong>
+                                <span>Convert Java objects to JSON responses with fine-grained control over field naming, nulls, and date formats.</span>
+                            </div>
+                        </li>
+                        <li>
+                            <div>
+                                <strong>Nested Objects</strong>
+                                <span>Handle complex payloads with nested arrays, maps, and polymorphic types using <code>@JsonTypeInfo</code>.</span>
+                            </div>
+                        </li>
+                        <li>
+                            <div>
+                                <strong>Error Handling</strong>
+                                <span>Catch <code>JsonProcessingException</code> and return structured error responses with <code>@ControllerAdvice</code>.</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features" style="padding-top: 0;">
+        <div class="container">
+            <h2>Key Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🔄</div>
+                    <h3>Two-Way Conversion</h3>
+                    <p>Full serialization and deserialization pipelines with ObjectMapper configuration beans.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🏗️</div>
+                    <h3>Nested Structures</h3>
+                    <p>Supports deeply nested JSON with arrays, maps, generics, and polymorphic subtypes.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🛡️</div>
+                    <h3>Input Validation</h3>
+                    <p>Bean Validation (<code>@Valid</code>, <code>@NotNull</code>) integrated with custom error messages.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Java 17 Records</h3>
+                    <p>Modern immutable data carriers using Java 17 records with Jackson record support.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📋</div>
+                    <h3>Custom Serializers</h3>
+                    <p>Write custom <code>JsonSerializer</code> / <code>JsonDeserializer</code> for special data types.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔍</div>
+                    <h3>Error Handling</h3>
+                    <p>Global exception handler returns RFC 7807 Problem Details on malformed JSON.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Code Examples -->
+    <section id="examples" style="padding-top: 0;">
+        <div class="container">
+            <h2>Code Examples</h2>
+
+            <!-- Deserialization -->
+            <div class="code-section">
+                <div class="code-section-header">
+                    <h3>Deserialization — JSON → Java Object</h3>
+                    <span class="code-lang">Java 17</span>
+                </div>
+                <pre><code><span class="cmt">// Java 17 record as the target POJO</span>
+<span class="kw">public record</span> <span class="cls">UserRequest</span>(
+    <span class="kw">@JsonProperty</span>(<span class="str">"first_name"</span>) <span class="cls">String</span> firstName,
+    <span class="kw">@JsonProperty</span>(<span class="str">"last_name"</span>)  <span class="cls">String</span> lastName,
+    <span class="kw">@JsonProperty</span>(<span class="str">"email"</span>)      <span class="cls">String</span> email
+) {}
+
+<span class="cmt">// Spring Boot controller — Jackson deserializes automatically</span>
+<span class="kw">@RestController</span>
+<span class="kw">@RequestMapping</span>(<span class="str">"/api/users"</span>)
+<span class="kw">public class</span> <span class="cls">UserController</span> {
+
+    <span class="kw">@PostMapping</span>
+    <span class="kw">public</span> <span class="cls">ResponseEntity</span>&lt;<span class="cls">String</span>&gt; <span class="fn">createUser</span>(<span class="kw">@RequestBody @Valid</span> <span class="cls">UserRequest</span> req) {
+        <span class="kmt">// req.firstName() / req.lastName() / req.email() ready to use</span>
+        <span class="kw">return</span> <span class="cls">ResponseEntity</span>.<span class="fn">ok</span>(<span class="str">"Created: "</span> + req.firstName());
+    }
+}</code></pre>
+            </div>
+
+            <!-- Serialization -->
+            <div class="code-section">
+                <div class="code-section-header">
+                    <h3>Serialization — Java Object → JSON</h3>
+                    <span class="code-lang">Java 17</span>
+                </div>
+                <pre><code><span class="kw">@JsonNaming</span>(<span class="cls">PropertyNamingStrategies</span>.<span class="cls">SnakeCaseStrategy</span>.<span class="kw">class</span>)
+<span class="kw">public record</span> <span class="cls">UserResponse</span>(
+    <span class="cls">Long</span>   userId,      <span class="cmt">// → "user_id"</span>
+    <span class="cls">String</span> firstName,   <span class="cmt">// → "first_name"</span>
+    <span class="cls">String</span> email,
+    <span class="kw">@JsonIgnore</span> <span class="cls">String</span> passwordHash  <span class="cmt">// excluded from output</span>
+) {}
+
+<span class="cmt">// ObjectMapper configuration bean (global defaults)</span>
+<span class="kw">@Configuration</span>
+<span class="kw">public class</span> <span class="cls">JacksonConfig</span> {
+
+    <span class="kw">@Bean</span>
+    <span class="kw">public</span> <span class="cls">ObjectMapper</span> <span class="fn">objectMapper</span>() {
+        <span class="kw">return new</span> <span class="cls">ObjectMapper</span>()
+            .<span class="fn">registerModule</span>(<span class="kw">new</span> <span class="cls">JavaTimeModule</span>())
+            .<span class="fn">disable</span>(<span class="cls">SerializationFeature</span>.<span class="cls">WRITE_DATES_AS_TIMESTAMPS</span>)
+            .<span class="fn">setSerializationInclusion</span>(<span class="cls">JsonInclude</span>.<span class="cls">Include</span>.<span class="cls">NON_NULL</span>);
+    }
+}</code></pre>
+            </div>
+
+            <!-- Nested Objects -->
+            <div class="code-section">
+                <div class="code-section-header">
+                    <h3>Nested Objects & Arrays</h3>
+                    <span class="code-lang">Java 17</span>
+                </div>
+                <pre><code><span class="cmt">// Incoming JSON:
+// { "order_id": 42, "items": [{"sku":"ABC","qty":2}] }</span>
+
+<span class="kw">public record</span> <span class="cls">OrderItem</span>(
+    <span class="cls">String</span> sku,
+    <span class="num">@JsonProperty</span>(<span class="str">"qty"</span>) <span class="cls">int</span> quantity
+) {}
+
+<span class="kw">public record</span> <span class="cls">OrderRequest</span>(
+    <span class="kw">@JsonProperty</span>(<span class="str">"order_id"</span>) <span class="cls">Long</span> orderId,
+    <span class="cls">List</span>&lt;<span class="cls">OrderItem</span>&gt; items
+) {}
+
+<span class="cmt">// Manual deserialization with TypeReference for generic types</span>
+<span class="cls">String</span> json = <span class="str">"""
+    [{"sku":"ABC","qty":2},{"sku":"XYZ","qty":5}]
+    """</span>;
+
+<span class="cls">List</span>&lt;<span class="cls">OrderItem</span>&gt; items = objectMapper.<span class="fn">readValue</span>(
+    json, <span class="kw">new</span> <span class="cls">TypeReference</span>&lt;<span class="cls">List</span>&lt;<span class="cls">OrderItem</span>&gt;&gt;() {}
+);</code></pre>
+            </div>
+
+            <!-- Error Handling -->
+            <div class="code-section">
+                <div class="code-section-header">
+                    <h3>Error Handling with @ControllerAdvice</h3>
+                    <span class="code-lang">Java 17</span>
+                </div>
+                <pre><code><span class="kw">@RestControllerAdvice</span>
+<span class="kw">public class</span> <span class="cls">GlobalExceptionHandler</span> {
+
+    <span class="kw">@ExceptionHandler</span>(<span class="cls">HttpMessageNotReadableException</span>.<span class="kw">class</span>)
+    <span class="kw">public</span> <span class="cls">ResponseEntity</span>&lt;<span class="cls">ProblemDetail</span>&gt; <span class="fn">handleMalformedJson</span>(
+            <span class="cls">HttpMessageNotReadableException</span> ex) {
+
+        <span class="cls">ProblemDetail</span> problem = <span class="cls">ProblemDetail</span>
+            .<span class="fn">forStatusAndDetail</span>(<span class="cls">HttpStatus</span>.<span class="cls">BAD_REQUEST</span>, <span class="str">"Malformed JSON body"</span>);
+        problem.<span class="fn">setTitle</span>(<span class="str">"Invalid Request"</span>);
+        <span class="kw">return</span> <span class="cls">ResponseEntity</span>.<span class="fn">badRequest</span>().<span class="fn">body</span>(problem);
+    }
+
+    <span class="kw">@ExceptionHandler</span>(<span class="cls">MethodArgumentNotValidException</span>.<span class="kw">class</span>)
+    <span class="kw">public</span> <span class="cls">ResponseEntity</span>&lt;<span class="cls">ProblemDetail</span>&gt; <span class="fn">handleValidation</span>(
+            <span class="cls">MethodArgumentNotValidException</span> ex) {
+
+        <span class="cls">String</span> detail = ex.<span class="fn">getBindingResult</span>().<span class="fn">getFieldErrors</span>()
+            .<span class="fn">stream</span>()
+            .<span class="fn">map</span>(e -&gt; e.<span class="fn">getField</span>() + <span class="str">": "</span> + e.<span class="fn">getDefaultMessage</span>())
+            .<span class="fn">collect</span>(<span class="cls">Collectors</span>.<span class="fn">joining</span>(<span class="str">", "</span>));
+
+        <span class="cls">ProblemDetail</span> problem = <span class="cls">ProblemDetail</span>
+            .<span class="fn">forStatusAndDetail</span>(<span class="cls">HttpStatus</span>.<span class="cls">UNPROCESSABLE_ENTITY</span>, detail);
+        problem.<span class="fn">setTitle</span>(<span class="str">"Validation Failed"</span>);
+        <span class="kw">return</span> <span class="cls">ResponseEntity</span>.<span class="fn">unprocessableEntity</span>().<span class="fn">body</span>(problem);
+    }
+}</code></pre>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Back to portfolio CTA -->
+    <section style="padding: 2rem 2rem 5rem;">
+        <div class="container cta-center">
+            <a href="index.html#projects" class="back-btn">← Back to Projects</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Pramod Gautam. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Hamburger menu
+        const hamburger = document.querySelector('.hamburger');
+        const navMenu   = document.querySelector('nav ul');
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('open');
+            navMenu.classList.toggle('open');
+        });
+        navMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('open');
+                navMenu.classList.remove('open');
+            });
+        });
+
+        // Scroll-in animation for feature cards
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animation = 'slideUp 0.6s ease-out forwards';
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+        document.querySelectorAll('.feature-card').forEach(card => observer.observe(card));
+    </script>
+
+    <!-- GoatCounter Analytics -->
+    <script data-goatcounter="https://pramodgautam.goatcounter.com/count"
+            async src="count.js"></script>
+    <noscript>
+        <img src="https://pramodgautam.goatcounter.com/count?p=/json-data-handler&t=JSON+Data+Handler"
+             alt="" style="position:absolute;left:-9999px" />
+    </noscript>
+</body>
+</html>

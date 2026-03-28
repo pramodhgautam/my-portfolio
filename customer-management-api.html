@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://pramodgautam.goatcounter.com; connect-src 'self' https://pramodgautam.goatcounter.com; font-src 'self';">
+    <title>Customer Management API — Pramod Gautam</title>
+    <meta name="description" content="A REST API built with Spring Boot for managing customer data. Implements JSON serialization/deserialization with Jackson, in-memory data storage, and CRUD operations.">
+    <meta name="author" content="Pramod Gautam">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#0f172a">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #0f172a;
+            --secondary: #1e293b;
+            --accent: #3b82f6;
+            --accent-bright: #60a5fa;
+            --text: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --border: #334155;
+        }
+
+        html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--primary) 0%, #0f0f1e 100%);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed; top: 0; width: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem 2rem; z-index: 1000;
+            border-bottom: 1px solid var(--border);
+        }
+        nav .container {
+            max-width: 1200px; margin: 0 auto;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .logo {
+            font-size: 1.8rem; font-weight: 800;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-bright) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text; text-decoration: none;
+        }
+        nav ul { display: flex; gap: 2rem; list-style: none; }
+        nav a { color: var(--text-muted); text-decoration: none; transition: color 0.3s; font-weight: 500; }
+        nav a:hover { color: var(--accent-bright); }
+
+        .hamburger {
+            display: none; flex-direction: column; gap: 5px;
+            cursor: pointer; background: none; border: none; padding: 4px;
+        }
+        .hamburger span { display: block; width: 25px; height: 2px; background: var(--text); border-radius: 2px; transition: all 0.3s; }
+        .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+        .hamburger.open span:nth-child(2) { opacity: 0; }
+        .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+
+        /* Hero */
+        .hero {
+            min-height: 55vh; display: flex;
+            align-items: center; justify-content: center;
+            text-align: center; padding-top: 80px;
+        }
+        .hero-content { animation: slideUp 1s ease-out; }
+        .hero-eyebrow {
+            font-size: 0.95rem; letter-spacing: 0.15em;
+            text-transform: uppercase; color: var(--accent-bright);
+            margin-bottom: 1rem; font-weight: 600;
+        }
+        h1 {
+            font-size: 3.2rem; margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--accent-bright) 0%, var(--text) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text; font-weight: 900; line-height: 1.2;
+        }
+        .subtitle { font-size: 1.15rem; color: var(--text-muted); max-width: 620px; margin: 0 auto 2rem; }
+        .hero-tags { display: flex; justify-content: center; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.5rem; }
+        .hero-tag {
+            background: var(--secondary); padding: 0.4rem 1.1rem;
+            border-radius: 20px; border: 1px solid var(--border);
+            color: var(--accent-bright); font-size: 0.9rem; font-weight: 500;
+        }
+
+        /* Sections */
+        section { padding: 5rem 2rem; }
+        section h2 {
+            font-size: 2.4rem; margin-bottom: 2.5rem; text-align: center;
+            background: linear-gradient(135deg, var(--accent-bright) 0%, var(--text) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+
+        /* Endpoint table */
+        .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
+        table { width: 100%; border-collapse: collapse; }
+        thead tr { background: rgba(59,130,246,0.1); }
+        th, td { padding: 0.9rem 1.25rem; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.95rem; }
+        th { color: var(--accent-bright); font-weight: 600; }
+        td { color: var(--text-muted); }
+        tr:last-child td { border-bottom: none; }
+        .method {
+            display: inline-block; padding: 0.2rem 0.65rem; border-radius: 4px;
+            font-size: 0.8rem; font-weight: 700; letter-spacing: 0.05em;
+        }
+        .get    { background: rgba(34,197,94,0.15);  color: #86efac; }
+        .post   { background: rgba(59,130,246,0.15); color: #93c5fd; }
+        .put    { background: rgba(251,191,36,0.15); color: #fcd34d; }
+        .delete { background: rgba(239,68,68,0.15);  color: #fca5a5; }
+
+        /* Feature cards */
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; }
+        .feature-card {
+            background: var(--secondary); border: 1px solid var(--border);
+            border-radius: 12px; padding: 1.75rem; transition: all 0.3s; opacity: 0;
+        }
+        .feature-card:hover { border-color: var(--accent); transform: translateY(-6px); box-shadow: 0 16px 36px rgba(59,130,246,0.18); }
+        .feature-icon { font-size: 2rem; margin-bottom: 1rem; }
+        .feature-card h3 { font-size: 1.1rem; color: var(--accent-bright); margin-bottom: 0.5rem; }
+        .feature-card p  { color: var(--text-muted); font-size: 0.95rem; }
+
+        /* Code blocks */
+        .code-section { background: var(--secondary); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 2rem; }
+        .code-section-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 1rem 1.5rem; border-bottom: 1px solid var(--border);
+            background: rgba(59,130,246,0.06);
+        }
+        .code-section-header h3 { font-size: 1.05rem; color: var(--accent-bright); }
+        .code-lang {
+            font-size: 0.8rem; color: var(--text-muted);
+            background: var(--primary); padding: 0.2rem 0.6rem;
+            border-radius: 4px; border: 1px solid var(--border);
+        }
+        pre { padding: 1.5rem; overflow-x: auto; font-size: 0.88rem; line-height: 1.7; background: #0a0f1e; }
+        code { font-family: 'Consolas', 'Courier New', monospace; color: #e2e8f0; }
+        .kw  { color: #93c5fd; }
+        .cls { color: #67e8f9; }
+        .str { color: #86efac; }
+        .cmt { color: #64748b; font-style: italic; }
+        .num { color: #fca5a5; }
+        .fn  { color: #c4b5fd; }
+
+        /* Steps */
+        .steps-list { list-style: none; counter-reset: step-counter; display: flex; flex-direction: column; gap: 1.25rem; }
+        .steps-list li {
+            counter-increment: step-counter; display: flex; align-items: flex-start; gap: 1.25rem;
+            background: var(--secondary); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem 1.5rem;
+        }
+        .steps-list li::before {
+            content: counter(step-counter); flex-shrink: 0; width: 2rem; height: 2rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-bright) 100%);
+            color: white; font-weight: 700; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 0.9rem;
+        }
+        .steps-list li div strong { display: block; color: var(--accent-bright); margin-bottom: 0.25rem; }
+        .steps-list li div span  { color: var(--text-muted); font-size: 0.95rem; }
+
+        /* Back button */
+        .back-btn {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            padding: 0.75rem 1.75rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-bright) 100%);
+            color: white; border-radius: 8px; font-weight: 600; text-decoration: none;
+            transition: all 0.3s; box-shadow: 0 8px 24px rgba(59,130,246,0.3);
+        }
+        .back-btn:hover { transform: translateY(-2px); box-shadow: 0 14px 32px rgba(59,130,246,0.4); }
+        .cta-center { text-align: center; padding-top: 1rem; }
+
+        footer { background: var(--secondary); padding: 2rem; text-align: center; color: var(--text-muted); border-top: 1px solid var(--border); }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            html { scroll-padding-top: 70px; }
+            h1 { font-size: 2.1rem; }
+            .hamburger { display: flex; }
+            nav ul {
+                position: absolute; top: 100%; left: 0; right: 0;
+                flex-direction: column; background: rgba(15,23,42,0.98);
+                backdrop-filter: blur(10px); padding: 1.5rem 2rem;
+                gap: 1rem; border-bottom: 1px solid var(--border); display: none;
+            }
+            nav ul.open { display: flex; }
+            section { padding: 3.5rem 1.5rem; }
+            section h2 { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="container">
+            <a href="index.html" class="logo">PG</a>
+            <button class="hamburger" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+            <ul>
+                <li><a href="index.html#home">Home</a></li>
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="index.html#projects">Projects</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-content">
+            <p class="hero-eyebrow">Featured Project</p>
+            <h1>Customer Management API</h1>
+            <p class="subtitle">A production-ready REST API built with Spring Boot for full CRUD management of customer data, powered by Jackson for JSON handling and an in-memory store.</p>
+            <div class="hero-tags">
+                <span class="hero-tag">Spring Boot</span>
+                <span class="hero-tag">REST API</span>
+                <span class="hero-tag">Jackson</span>
+                <span class="hero-tag">Java 17</span>
+                <span class="hero-tag">CRUD</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Overview -->
+    <section id="overview">
+        <div class="container">
+            <h2>Project Overview</h2>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start;">
+                <div>
+                    <p style="color:var(--text-muted);font-size:1.05rem;margin-bottom:1.25rem;">
+                        This project demonstrates how to build a clean, well-structured RESTful API with Spring Boot. It covers the full lifecycle of a customer resource — create, read, update, and delete — with proper HTTP status codes and JSON request/response bodies.
+                    </p>
+                    <p style="color:var(--text-muted);font-size:1.05rem;margin-bottom:1.25rem;">
+                        Jackson is configured globally via an <code style="color:var(--accent-bright);">ObjectMapper</code> bean to handle snake_case field naming, null exclusion, and Java 8 date/time serialization out of the box.
+                    </p>
+                    <p style="color:var(--text-muted);font-size:1.05rem;">
+                        The in-memory store uses a <code style="color:var(--accent-bright);">ConcurrentHashMap</code> to keep the project self-contained with no database dependency, making it easy to run and explore locally.
+                    </p>
+                </div>
+                <ul class="steps-list">
+                    <li><div><strong>Define the Model</strong><span>Java 17 record <code>Customer</code> with Jackson annotations for JSON field mapping.</span></div></li>
+                    <li><div><strong>Build the Repository</strong><span>Thread-safe in-memory store with <code>ConcurrentHashMap</code> and an atomic ID counter.</span></div></li>
+                    <li><div><strong>Expose REST Endpoints</strong><span>Controller maps HTTP verbs to CRUD operations and returns proper status codes.</span></div></li>
+                    <li><div><strong>Handle Errors Globally</strong><span><code>@RestControllerAdvice</code> catches not-found and validation errors with structured responses.</span></div></li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- API Endpoints -->
+    <section id="endpoints" style="padding-top:0;">
+        <div class="container">
+            <h2>API Endpoints</h2>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>Endpoint</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="method get">GET</span></td>
+                            <td><code>/api/customers</code></td>
+                            <td>List all customers</td>
+                            <td>200 OK</td>
+                        </tr>
+                        <tr>
+                            <td><span class="method get">GET</span></td>
+                            <td><code>/api/customers/{id}</code></td>
+                            <td>Get customer by ID</td>
+                            <td>200 / 404</td>
+                        </tr>
+                        <tr>
+                            <td><span class="method post">POST</span></td>
+                            <td><code>/api/customers</code></td>
+                            <td>Create a new customer</td>
+                            <td>201 Created</td>
+                        </tr>
+                        <tr>
+                            <td><span class="method put">PUT</span></td>
+                            <td><code>/api/customers/{id}</code></td>
+                            <td>Update an existing customer</td>
+                            <td>200 / 404</td>
+                        </tr>
+                        <tr>
+                            <td><span class="method delete">DELETE</span></td>
+                            <td><code>/api/customers/{id}</code></td>
+                            <td>Delete a customer</td>
+                            <td>204 / 404</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features" style="padding-top:0;">
+        <div class="container">
+            <h2>Key Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🏗️</div>
+                    <h3>Layered Architecture</h3>
+                    <p>Clean separation of Controller, Service, and Repository layers for maintainability.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔄</div>
+                    <h3>Jackson Configuration</h3>
+                    <p>Global ObjectMapper bean with snake_case naming, null exclusion, and date module.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">✅</div>
+                    <h3>Bean Validation</h3>
+                    <p><code>@Valid</code> + <code>@NotBlank</code>/<code>@Email</code> on request DTOs with informative error messages.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🛡️</div>
+                    <h3>Global Error Handler</h3>
+                    <p><code>@RestControllerAdvice</code> returns RFC 7807 Problem Details for all error scenarios.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Thread-Safe Store</h3>
+                    <p><code>ConcurrentHashMap</code> and <code>AtomicLong</code> IDs ensure safe concurrent access.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📄</div>
+                    <h3>OpenAPI Ready</h3>
+                    <p>Annotations in place to generate Swagger UI docs with <code>springdoc-openapi</code>.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Code Examples -->
+    <section id="code" style="padding-top:0;">
+        <div class="container">
+            <h2>Code Highlights</h2>
+
+            <div class="code-section">
+                <div class="code-section-header">
+                    <h3>Customer Model (Java 17 Record)</h3>
+                    <span class="code-lang">Java 17</span>
+                </div>
+                <pre><code><span class="kw">@JsonNaming</span>(<span class="cls">PropertyNamingStrategies</span>.<span class="cls">SnakeCaseStrategy</span>.<span class="kw">class</span>)
+<span class="kw">public record</span> <span class="cls">Customer</span>(
+    <span class="cls">Long</span>   id,
+    <span class="kw">@NotBlank</span> <span class="cls">String</span> firstName,
+    <span class="kw">@NotBlank</span> <span class="cls">String</span> lastName,
+    <span class="kw">@Email @NotBlank</span> <span class="cls">String</span> email,
+    <span class="cls">String</span> phone
+) {
+    <span class="cmt">// Factory method used when creating a new customer (ID assigned by repo)</span>
+    <span class="kw">public static</span> <span class="cls">Customer</span> <span class="fn">withId</span>(<span class="cls">Long</span> id, <span class="cls">Customer</span> src) {
+        <span class="kw">return new</span> <span class="cls">Customer</span>(id, src.firstName(), src.lastName(), src.email(), src.phone());
+    }
+}</code></pre>
+            </div>
+
+            <div class="code-section">
+                <div class="code-section-header">
+                    <h3>REST Controller</h3>
+                    <span class="code-lang">Java 17</span>
+                </div>
+                <pre><code><span class="kw">@RestController</span>
+<span class="kw">@RequestMapping</span>(<span class="str">"/api/customers"</span>)
+<span class="kw">@RequiredArgsConstructor</span>
+<span class="kw">public class</span> <span class="cls">CustomerController</span> {
+
+    <span class="kw">private final</span> <span class="cls">CustomerService</span> service;
+
+    <span class="kw">@GetMapping</span>
+    <span class="kw">public</span> <span class="cls">List</span>&lt;<span class="cls">Customer</span>&gt; <span class="fn">getAll</span>() { <span class="kw">return</span> service.<span class="fn">findAll</span>(); }
+
+    <span class="kw">@GetMapping</span>(<span class="str">"/{id}"</span>)
+    <span class="kw">public</span> <span class="cls">Customer</span> <span class="fn">getOne</span>(<span class="kw">@PathVariable</span> <span class="cls">Long</span> id) { <span class="kw">return</span> service.<span class="fn">findById</span>(id); }
+
+    <span class="kw">@PostMapping</span>
+    <span class="kw">public</span> <span class="cls">ResponseEntity</span>&lt;<span class="cls">Customer</span>&gt; <span class="fn">create</span>(<span class="kw">@RequestBody @Valid</span> <span class="cls">Customer</span> body) {
+        <span class="kw">return</span> <span class="cls">ResponseEntity</span>.<span class="fn">status</span>(<span class="cls">HttpStatus</span>.<span class="cls">CREATED</span>).<span class="fn">body</span>(service.<span class="fn">create</span>(body));
+    }
+
+    <span class="kw">@PutMapping</span>(<span class="str">"/{id}"</span>)
+    <span class="kw">public</span> <span class="cls">Customer</span> <span class="fn">update</span>(<span class="kw">@PathVariable</span> <span class="cls">Long</span> id, <span class="kw">@RequestBody @Valid</span> <span class="cls">Customer</span> body) {
+        <span class="kw">return</span> service.<span class="fn">update</span>(id, body);
+    }
+
+    <span class="kw">@DeleteMapping</span>(<span class="str">"/{id}"</span>)
+    <span class="kw">@ResponseStatus</span>(<span class="cls">HttpStatus</span>.<span class="cls">NO_CONTENT</span>)
+    <span class="kw">public void</span> <span class="fn">delete</span>(<span class="kw">@PathVariable</span> <span class="cls">Long</span> id) { service.<span class="fn">delete</span>(id); }
+}</code></pre>
+            </div>
+
+            <div class="code-section">
+                <div class="code-section-header">
+                    <h3>In-Memory Repository</h3>
+                    <span class="code-lang">Java 17</span>
+                </div>
+                <pre><code><span class="kw">@Repository</span>
+<span class="kw">public class</span> <span class="cls">CustomerRepository</span> {
+
+    <span class="kw">private final</span> <span class="cls">Map</span>&lt;<span class="cls">Long</span>, <span class="cls">Customer</span>&gt; store = <span class="kw">new</span> <span class="cls">ConcurrentHashMap</span>&lt;&gt;();
+    <span class="kw">private final</span> <span class="cls">AtomicLong</span> counter = <span class="kw">new</span> <span class="cls">AtomicLong</span>(<span class="num">1</span>);
+
+    <span class="kw">public</span> <span class="cls">List</span>&lt;<span class="cls">Customer</span>&gt; <span class="fn">findAll</span>() { <span class="kw">return new</span> <span class="cls">ArrayList</span>&lt;&gt;(store.<span class="fn">values</span>()); }
+
+    <span class="kw">public</span> <span class="cls">Optional</span>&lt;<span class="cls">Customer</span>&gt; <span class="fn">findById</span>(<span class="cls">Long</span> id) { <span class="kw">return</span> <span class="cls">Optional</span>.<span class="fn">ofNullable</span>(store.<span class="fn">get</span>(id)); }
+
+    <span class="kw">public</span> <span class="cls">Customer</span> <span class="fn">save</span>(<span class="cls">Customer</span> c) {
+        <span class="cls">Long</span> id = c.id() != <span class="kw">null</span> ? c.id() : counter.<span class="fn">getAndIncrement</span>();
+        <span class="cls">Customer</span> saved = <span class="cls">Customer</span>.<span class="fn">withId</span>(id, c);
+        store.<span class="fn">put</span>(id, saved);
+        <span class="kw">return</span> saved;
+    }
+
+    <span class="kw">public boolean</span> <span class="fn">deleteById</span>(<span class="cls">Long</span> id) { <span class="kw">return</span> store.<span class="fn">remove</span>(id) != <span class="kw">null</span>; }
+}</code></pre>
+            </div>
+        </div>
+    </section>
+
+    <section style="padding: 2rem 2rem 5rem;">
+        <div class="container cta-center">
+            <a href="index.html#projects" class="back-btn">← Back to Projects</a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Pramod Gautam. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const hamburger = document.querySelector('.hamburger');
+        const navMenu   = document.querySelector('nav ul');
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('open');
+            navMenu.classList.toggle('open');
+        });
+        navMenu.querySelectorAll('a').forEach(l => l.addEventListener('click', () => {
+            hamburger.classList.remove('open');
+            navMenu.classList.remove('open');
+        }));
+
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(e => { if (e.isIntersecting) { e.target.style.animation = 'slideUp 0.6s ease-out forwards'; observer.unobserve(e.target); } });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+        document.querySelectorAll('.feature-card').forEach(c => observer.observe(c));
+    </script>
+
+    <script data-goatcounter="https://pramodgautam.goatcounter.com/count" async src="count.js"></script>
+    <noscript>
+        <img src="https://pramodgautam.goatcounter.com/count?p=/customer-management-api&t=Customer+Management+API" alt="" style="position:absolute;left:-9999px" />
+    </noscript>
+</body>
+</html>

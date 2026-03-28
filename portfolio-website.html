@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://pramodgautam.goatcounter.com; connect-src 'self' https://pramodgautam.goatcounter.com; font-src 'self';">
+    <title>Portfolio Website — Pramod Gautam</title>
+    <meta name="description" content="Modern, responsive portfolio website with smooth animations and interactive elements. Built with vanilla HTML, CSS, and JavaScript for optimal performance.">
+    <meta name="author" content="Pramod Gautam">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#0f172a">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #0f172a;
+            --secondary: #1e293b;
+            --accent: #3b82f6;
+            --accent-bright: #60a5fa;
+            --text: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --border: #334155;
+        }
+
+        html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--primary) 0%, #0f0f1e 100%);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        nav {
+            position: fixed; top: 0; width: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem 2rem; z-index: 1000;
+            border-bottom: 1px solid var(--border);
+        }
+        nav .container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .logo {
+            font-size: 1.8rem; font-weight: 800;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-bright) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text; text-decoration: none;
+        }
+        nav ul { display: flex; gap: 2rem; list-style: none; }
+        nav a { color: var(--text-muted); text-decoration: none; transition: color 0.3s; font-weight: 500; }
+        nav a:hover { color: var(--accent-bright); }
+
+        .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 4px; }
+        .hamburger span { display: block; width: 25px; height: 2px; background: var(--text); border-radius: 2px; transition: all 0.3s; }
+        .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+        .hamburger.open span:nth-child(2) { opacity: 0; }
+        .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+
+        .hero { min-height: 55vh; display: flex; align-items: center; justify-content: center; text-align: center; padding-top: 80px; }
+        .hero-content { animation: slideUp 1s ease-out; }
+        .hero-eyebrow { font-size: 0.95rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent-bright); margin-bottom: 1rem; font-weight: 600; }
+        h1 {
+            font-size: 3.2rem; margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--accent-bright) 0%, var(--text) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text; font-weight: 900; line-height: 1.2;
+        }
+        .subtitle { font-size: 1.15rem; color: var(--text-muted); max-width: 620px; margin: 0 auto 2rem; }
+        .hero-tags { display: flex; justify-content: center; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.5rem; }
+        .hero-tag { background: var(--secondary); padding: 0.4rem 1.1rem; border-radius: 20px; border: 1px solid var(--border); color: var(--accent-bright); font-size: 0.9rem; font-weight: 500; }
+
+        section { padding: 5rem 2rem; }
+        section h2 {
+            font-size: 2.4rem; margin-bottom: 2.5rem; text-align: center;
+            background: linear-gradient(135deg, var(--accent-bright) 0%, var(--text) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; }
+        .feature-card { background: var(--secondary); border: 1px solid var(--border); border-radius: 12px; padding: 1.75rem; transition: all 0.3s; opacity: 0; }
+        .feature-card:hover { border-color: var(--accent); transform: translateY(-6px); box-shadow: 0 16px 36px rgba(59,130,246,0.18); }
+        .feature-icon { font-size: 2rem; margin-bottom: 1rem; }
+        .feature-card h3 { font-size: 1.1rem; color: var(--accent-bright); margin-bottom: 0.5rem; }
+        .feature-card p  { color: var(--text-muted); font-size: 0.95rem; }
+
+        /* Tech stack pill rows */
+        .tech-row { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1rem; }
+        .tech-pill { background: var(--primary); padding: 0.35rem 1rem; border-radius: 20px; border: 1px solid var(--border); color: var(--accent-bright); font-size: 0.88rem; }
+
+        /* Design decisions list */
+        .decision-list { list-style: none; display: flex; flex-direction: column; gap: 1rem; }
+        .decision-list li { display: flex; align-items: flex-start; gap: 1rem; background: var(--secondary); border: 1px solid var(--border); border-radius: 10px; padding: 1.1rem 1.4rem; }
+        .decision-list li .icon { font-size: 1.5rem; flex-shrink: 0; }
+        .decision-list li strong { display: block; color: var(--accent-bright); margin-bottom: 0.2rem; }
+        .decision-list li span { color: var(--text-muted); font-size: 0.95rem; }
+
+        /* Code blocks */
+        .code-section { background: var(--secondary); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 2rem; }
+        .code-section-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); background: rgba(59,130,246,0.06); }
+        .code-section-header h3 { font-size: 1.05rem; color: var(--accent-bright); }
+        .code-lang { font-size: 0.8rem; color: var(--text-muted); background: var(--primary); padding: 0.2rem 0.6rem; border-radius: 4px; border: 1px solid var(--border); }
+        pre { padding: 1.5rem; overflow-x: auto; font-size: 0.88rem; line-height: 1.7; background: #0a0f1e; }
+        code { font-family: 'Consolas', 'Courier New', monospace; color: #e2e8f0; }
+        .kw  { color: #93c5fd; }
+        .cls { color: #67e8f9; }
+        .str { color: #86efac; }
+        .cmt { color: #64748b; font-style: italic; }
+        .fn  { color: #c4b5fd; }
+
+        .back-btn {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            padding: 0.75rem 1.75rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-bright) 100%);
+            color: white; border-radius: 8px; font-weight: 600; text-decoration: none;
+            transition: all 0.3s; box-shadow: 0 8px 24px rgba(59,130,246,0.3);
+        }
+        .back-btn:hover { transform: translateY(-2px); box-shadow: 0 14px 32px rgba(59,130,246,0.4); }
+        .cta-center { text-align: center; padding-top: 1rem; }
+
+        footer { background: var(--secondary); padding: 2rem; text-align: center; color: var(--text-muted); border-top: 1px solid var(--border); }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 768px) {
+            html { scroll-padding-top: 70px; }
+            h1 { font-size: 2.1rem; }
+            .hamburger { display: flex; }
+            nav ul { position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; background: rgba(15,23,42,0.98); backdrop-filter: blur(10px); padding: 1.5rem 2rem; gap: 1rem; border-bottom: 1px solid var(--border); display: none; }
+            nav ul.open { display: flex; }
+            section { padding: 3.5rem 1.5rem; }
+            section h2 { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="container">
+            <a href="index.html" class="logo">PG</a>
+            <button class="hamburger" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+            <ul>
+                <li><a href="index.html#home">Home</a></li>
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="index.html#projects">Projects</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-content">
+            <p class="hero-eyebrow">Featured Project</p>
+            <h1>Portfolio Website</h1>
+            <p class="subtitle">A modern, responsive developer portfolio built entirely with vanilla HTML, CSS, and JavaScript — no frameworks, no build tools, just fast and clean code.</p>
+            <div class="hero-tags">
+                <span class="hero-tag">HTML5</span>
+                <span class="hero-tag">CSS3</span>
+                <span class="hero-tag">JavaScript</span>
+                <span class="hero-tag">Three.js</span>
+                <span class="hero-tag">Responsive</span>
+                <span class="hero-tag">Accessible</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Overview -->
+    <section id="overview">
+        <div class="container">
+            <h2>Project Overview</h2>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start;">
+                <div>
+                    <p style="color:var(--text-muted);font-size:1.05rem;margin-bottom:1.25rem;">
+                        This portfolio was built with a zero-dependency philosophy — no React, no Tailwind, no bundler. Every animation, layout, and interaction is hand-crafted in CSS and vanilla JavaScript to keep the bundle tiny and the performance score green.
+                    </p>
+                    <p style="color:var(--text-muted);font-size:1.05rem;margin-bottom:1.25rem;">
+                        The hero section uses a Three.js particle field and wireframe shapes with mouse parallax to create an immersive first impression without impacting content load time.
+                    </p>
+                    <p style="color:var(--text-muted);font-size:1.05rem;margin-bottom:1.5rem;">
+                        GoatCounter analytics are integrated for privacy-friendly visitor tracking — no cookies, no GDPR banners needed.
+                    </p>
+                    <h3 style="color:var(--accent-bright);margin-bottom:0.75rem;">Tech Stack</h3>
+                    <div class="tech-row">
+                        <span class="tech-pill">HTML5</span>
+                        <span class="tech-pill">CSS3 Custom Properties</span>
+                        <span class="tech-pill">Vanilla JavaScript</span>
+                        <span class="tech-pill">Three.js r128</span>
+                        <span class="tech-pill">IntersectionObserver API</span>
+                        <span class="tech-pill">GoatCounter Analytics</span>
+                        <span class="tech-pill">JSON-LD SEO</span>
+                    </div>
+                </div>
+                <ul class="decision-list">
+                    <li>
+                        <span class="icon">🎨</span>
+                        <div><strong>Design System</strong><span>CSS custom properties for colours, consistent spacing, and a dark-first palette built with contrast in mind.</span></div>
+                    </li>
+                    <li>
+                        <span class="icon">⚡</span>
+                        <div><strong>Performance</strong><span>No framework overhead. Critical CSS is inlined; Three.js loads only for the hero canvas.</span></div>
+                    </li>
+                    <li>
+                        <span class="icon">📱</span>
+                        <div><strong>Responsive Layout</strong><span>Fluid grids with <code>auto-fit</code> columns and a hamburger nav that activates below 768 px.</span></div>
+                    </li>
+                    <li>
+                        <span class="icon">♿</span>
+                        <div><strong>Accessibility</strong><span>Semantic HTML, <code>aria-label</code> attributes, keyboard-navigable nav, and sufficient colour contrast.</span></div>
+                    </li>
+                    <li>
+                        <span class="icon">🔍</span>
+                        <div><strong>SEO</strong><span>JSON-LD structured data, Open Graph tags, and a canonical URL for optimal search indexing.</span></div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features" style="padding-top:0;">
+        <div class="container">
+            <h2>Key Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">✨</div>
+                    <h3>Three.js Hero</h3>
+                    <p>Animated particle field and wireframe shapes with real-time mouse parallax using WebGL.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎞️</div>
+                    <h3>Scroll Animations</h3>
+                    <p>Elements fade and slide in on scroll using the <code>IntersectionObserver</code> API — no library needed.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <h3>Fully Responsive</h3>
+                    <p>Mobile-first layout with a collapsible hamburger nav and fluid CSS Grid columns.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3>Content Security Policy</h3>
+                    <p>Strict CSP header blocks XSS and only whitelists trusted script sources.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Privacy Analytics</h3>
+                    <p>GoatCounter gives visitor stats without cookies, keeping the site GDPR compliant.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔍</div>
+                    <h3>SEO Optimised</h3>
+                    <p>JSON-LD Person schema, Open Graph, Twitter Card, and a canonical URL baked in.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Code Highlights -->
+    <section id="code" style="padding-top:0;">
+        <div class="container">
+            <h2>Code Highlights</h2>
+
+            <div class="code-section">
+                <div class="code-section-header">
+                    <h3>Scroll-triggered Animations (IntersectionObserver)</h3>
+                    <span class="code-lang">JavaScript</span>
+                </div>
+                <pre><code><span class="kw">const</span> observer = <span class="kw">new</span> <span class="cls">IntersectionObserver</span>((entries) => {
+    entries.<span class="fn">forEach</span>(entry => {
+        <span class="kw">if</span> (entry.isIntersecting) {
+            entry.target.style.animation = <span class="str">'slideUp 0.6s ease-out forwards'</span>;
+            observer.<span class="fn">unobserve</span>(entry.target); <span class="cmt">// run once</span>
+        }
+    });
+}, { threshold: <span class="str">0.1</span>, rootMargin: <span class="str">'0px 0px -50px 0px'</span> });
+
+document.<span class="fn">querySelectorAll</span>(<span class="str">'.project-card'</span>).<span class="fn">forEach</span>(card => observer.<span class="fn">observe</span>(card));</code></pre>
+            </div>
+
+            <div class="code-section">
+                <div class="code-section-header">
+                    <h3>Active Nav Link on Scroll</h3>
+                    <span class="code-lang">JavaScript</span>
+                </div>
+                <pre><code><span class="kw">const</span> sections = document.<span class="fn">querySelectorAll</span>(<span class="str">'section[id]'</span>);
+<span class="kw">const</span> navLinks = document.<span class="fn">querySelectorAll</span>(<span class="str">'nav a[href^="#"]'</span>);
+
+window.<span class="fn">addEventListener</span>(<span class="str">'scroll'</span>, () => {
+    <span class="kw">let</span> current = <span class="str">''</span>;
+    sections.<span class="fn">forEach</span>(section => {
+        <span class="kw">const</span> top = section.offsetTop - <span class="str">120</span>;
+        <span class="kw">if</span> (scrollY >= top) current = section.<span class="fn">getAttribute</span>(<span class="str">'id'</span>);
+    });
+    navLinks.<span class="fn">forEach</span>(link => {
+        link.classList.<span class="fn">toggle</span>(<span class="str">'active'</span>, link.<span class="fn">getAttribute</span>(<span class="str">'href'</span>) === <span class="str">'#'</span> + current);
+    });
+});</code></pre>
+            </div>
+
+            <div class="code-section">
+                <div class="code-section-header">
+                    <h3>CSS Custom Properties Design System</h3>
+                    <span class="code-lang">CSS</span>
+                </div>
+                <pre><code><span class="fn">:root</span> {
+    <span class="kw">--primary</span>:       <span class="str">#0f172a</span>;
+    <span class="kw">--secondary</span>:     <span class="str">#1e293b</span>;
+    <span class="kw">--accent</span>:        <span class="str">#3b82f6</span>;
+    <span class="kw">--accent-bright</span>: <span class="str">#60a5fa</span>;
+    <span class="kw">--text</span>:          <span class="str">#f1f5f9</span>;
+    <span class="kw">--text-muted</span>:    <span class="str">#cbd5e1</span>;
+    <span class="kw">--border</span>:        <span class="str">#334155</span>;
+}
+
+<span class="cmt">/* Gradient text utility applied site-wide */</span>
+<span class="fn">h2</span> {
+    background: <span class="fn">linear-gradient</span>(<span class="str">135deg</span>, <span class="fn">var</span>(<span class="kw">--accent-bright</span>) <span class="str">0%</span>, <span class="fn">var</span>(<span class="kw">--text</span>) <span class="str">100%</span>);
+    -webkit-background-clip: <span class="str">text</span>;
+    -webkit-text-fill-color: <span class="str">transparent</span>;
+    background-clip: <span class="str">text</span>;
+}</code></pre>
+            </div>
+        </div>
+    </section>
+
+    <section style="padding: 2rem 2rem 5rem;">
+        <div class="container cta-center">
+            <a href="index.html#projects" class="back-btn">← Back to Projects</a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Pramod Gautam. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const hamburger = document.querySelector('.hamburger');
+        const navMenu   = document.querySelector('nav ul');
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('open');
+            navMenu.classList.toggle('open');
+        });
+        navMenu.querySelectorAll('a').forEach(l => l.addEventListener('click', () => {
+            hamburger.classList.remove('open');
+            navMenu.classList.remove('open');
+        }));
+
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(e => { if (e.isIntersecting) { e.target.style.animation = 'slideUp 0.6s ease-out forwards'; observer.unobserve(e.target); } });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+        document.querySelectorAll('.feature-card').forEach(c => observer.observe(c));
+    </script>
+
+    <script data-goatcounter="https://pramodgautam.goatcounter.com/count" async src="count.js"></script>
+    <noscript>
+        <img src="https://pramodgautam.goatcounter.com/count?p=/portfolio-website&t=Portfolio+Website" alt="" style="position:absolute;left:-9999px" />
+    </noscript>
+</body>
+</html>

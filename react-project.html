@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://pramodgautam.goatcounter.com; connect-src 'self' https://pramodgautam.goatcounter.com; font-src 'self';">
+    <title>React Task Manager — Pramod Gautam</title>
+    <meta name="description" content="A full-featured task management app built with React 18. Uses hooks, Context API for state management, and a clean component-driven architecture with local persistence.">
+    <meta name="author" content="Pramod Gautam">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#0f172a">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #0f172a;
+            --secondary: #1e293b;
+            --accent: #3b82f6;
+            --accent-bright: #60a5fa;
+            --text: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --border: #334155;
+        }
+
+        html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--primary) 0%, #0f0f1e 100%);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        nav {
+            position: fixed; top: 0; width: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem 2rem; z-index: 1000;
+            border-bottom: 1px solid var(--border);
+        }
+        nav .container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .logo {
+            font-size: 1.8rem; font-weight: 800;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-bright) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text; text-decoration: none;
+        }
+        nav ul { display: flex; gap: 2rem; list-style: none; }
+        nav a { color: var(--text-muted); text-decoration: none; transition: color 0.3s; font-weight: 500; }
+        nav a:hover { color: var(--accent-bright); }
+
+        .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 4px; }
+        .hamburger span { display: block; width: 25px; height: 2px; background: var(--text); border-radius: 2px; transition: all 0.3s; }
+        .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+        .hamburger.open span:nth-child(2) { opacity: 0; }
+        .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+
+        .hero { min-height: 55vh; display: flex; align-items: center; justify-content: center; text-align: center; padding-top: 80px; }
+        .hero-content { animation: slideUp 1s ease-out; }
+        .hero-eyebrow { font-size: 0.95rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent-bright); margin-bottom: 1rem; font-weight: 600; }
+        h1 {
+            font-size: 3.2rem; margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--accent-bright) 0%, var(--text) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text; font-weight: 900; line-height: 1.2;
+        }
+        .subtitle { font-size: 1.15rem; color: var(--text-muted); max-width: 620px; margin: 0 auto 2rem; }
+        .hero-tags { display: flex; justify-content: center; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.5rem; }
+        .hero-tag { background: var(--secondary); padding: 0.4rem 1.1rem; border-radius: 20px; border: 1px solid var(--border); color: var(--accent-bright); font-size: 0.9rem; font-weight: 500; }
+
+        section { padding: 5rem 2rem; }
+        section h2 {
+            font-size: 2.4rem; margin-bottom: 2.5rem; text-align: center;
+            background: linear-gradient(135deg, var(--accent-bright) 0%, var(--text) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+
+        /* Features */
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; }
+        .feature-card { background: var(--secondary); border: 1px solid var(--border); border-radius: 12px; padding: 1.75rem; transition: all 0.3s; opacity: 0; }
+        .feature-card:hover { border-color: var(--accent); transform: translateY(-6px); box-shadow: 0 16px 36px rgba(59,130,246,0.18); }
+        .feature-icon { font-size: 2rem; margin-bottom: 1rem; }
+        .feature-card h3 { font-size: 1.1rem; color: var(--accent-bright); margin-bottom: 0.5rem; }
+        .feature-card p  { color: var(--text-muted); font-size: 0.95rem; }
+
+        /* Component tree */
+        .tree { background: var(--secondary); border: 1px solid var(--border); border-radius: 12px; padding: 1.75rem; }
+        .tree-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0; color: var(--text-muted); font-size: 0.95rem; }
+        .tree-item .comp { color: var(--accent-bright); font-weight: 600; }
+        .tree-item .desc { color: var(--text-muted); }
+        .tree-indent-1 { padding-left: 1.5rem; }
+        .tree-indent-2 { padding-left: 3rem; }
+        .tree-branch   { color: var(--border); margin-right: 0.25rem; }
+
+        /* Code blocks */
+        .code-section { background: var(--secondary); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 2rem; }
+        .code-section-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); background: rgba(59,130,246,0.06); }
+        .code-section-header h3 { font-size: 1.05rem; color: var(--accent-bright); }
+        .code-lang { font-size: 0.8rem; color: var(--text-muted); background: var(--primary); padding: 0.2rem 0.6rem; border-radius: 4px; border: 1px solid var(--border); }
+        pre { padding: 1.5rem; overflow-x: auto; font-size: 0.88rem; line-height: 1.7; background: #0a0f1e; }
+        code { font-family: 'Consolas', 'Courier New', monospace; color: #e2e8f0; }
+        .kw  { color: #93c5fd; }
+        .cls { color: #67e8f9; }
+        .str { color: #86efac; }
+        .cmt { color: #64748b; font-style: italic; }
+        .num { color: #fca5a5; }
+        .fn  { color: #c4b5fd; }
+        .tag { color: #f9a8d4; }
+        .attr{ color: #fcd34d; }
+
+        .back-btn {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            padding: 0.75rem 1.75rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-bright) 100%);
+            color: white; border-radius: 8px; font-weight: 600; text-decoration: none;
+            transition: all 0.3s; box-shadow: 0 8px 24px rgba(59,130,246,0.3);
+        }
+        .back-btn:hover { transform: translateY(-2px); box-shadow: 0 14px 32px rgba(59,130,246,0.4); }
+        .cta-center { text-align: center; padding-top: 1rem; }
+
+        footer { background: var(--secondary); padding: 2rem; text-align: center; color: var(--text-muted); border-top: 1px solid var(--border); }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 768px) {
+            html { scroll-padding-top: 70px; }
+            h1 { font-size: 2.1rem; }
+            .hamburger { display: flex; }
+            nav ul { position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; background: rgba(15,23,42,0.98); backdrop-filter: blur(10px); padding: 1.5rem 2rem; gap: 1rem; border-bottom: 1px solid var(--border); display: none; }
+            nav ul.open { display: flex; }
+            section { padding: 3.5rem 1.5rem; }
+            section h2 { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="container">
+            <a href="index.html" class="logo">PG</a>
+            <button class="hamburger" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+            <ul>
+                <li><a href="index.html#home">Home</a></li>
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="index.html#projects">Projects</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-content">
+            <p class="hero-eyebrow">Featured Project</p>
+            <h1>React Task Manager</h1>
+            <p class="subtitle">A full-featured task management application built with React 18 — leveraging hooks, Context API, and <code style="color:var(--accent-bright);">localStorage</code> persistence for a smooth, stateful user experience.</p>
+            <div class="hero-tags">
+                <span class="hero-tag">React 18</span>
+                <span class="hero-tag">JavaScript</span>
+                <span class="hero-tag">Context API</span>
+                <span class="hero-tag">Hooks</span>
+                <span class="hero-tag">localStorage</span>
+                <span class="hero-tag">Vite</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Overview -->
+    <section id="overview">
+        <div class="container">
+            <h2>Project Overview</h2>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start;">
+                <div>
+                    <p style="color:var(--text-muted);font-size:1.05rem;margin-bottom:1.25rem;">
+                        React Task Manager demonstrates idiomatic React 18 patterns — functional components throughout, custom hooks for business logic, and the Context + <code style="color:var(--accent-bright);">useReducer</code> combo as a lightweight Redux alternative.
+                    </p>
+                    <p style="color:var(--text-muted);font-size:1.05rem;margin-bottom:1.25rem;">
+                        Tasks are persisted in <code style="color:var(--accent-bright);">localStorage</code> via a dedicated <code style="color:var(--accent-bright);">usePersist</code> hook, so data survives page refreshes without any backend.
+                    </p>
+                    <p style="color:var(--text-muted);font-size:1.05rem;">
+                        The project is scaffolded with Vite for instant hot-module replacement and an optimised production build, keeping development fast and the final bundle lean.
+                    </p>
+                </div>
+                <div class="tree">
+                    <h3 style="color:var(--accent-bright);margin-bottom:1rem;font-size:1rem;">Component Tree</h3>
+                    <div class="tree-item"><span class="comp">&lt;App /&gt;</span></div>
+                    <div class="tree-item tree-indent-1"><span class="tree-branch">├─</span><span class="comp">&lt;TaskProvider /&gt;</span><span class="desc">&nbsp;— Context + Reducer</span></div>
+                    <div class="tree-item tree-indent-2"><span class="tree-branch">├─</span><span class="comp">&lt;Header /&gt;</span><span class="desc">&nbsp;— title, filter tabs</span></div>
+                    <div class="tree-item tree-indent-2"><span class="tree-branch">├─</span><span class="comp">&lt;AddTaskForm /&gt;</span><span class="desc">&nbsp;— controlled input + dispatch</span></div>
+                    <div class="tree-item tree-indent-2"><span class="tree-branch">├─</span><span class="comp">&lt;TaskList /&gt;</span><span class="desc">&nbsp;— filtered list render</span></div>
+                    <div class="tree-item tree-indent-2"><span class="tree-branch">│&nbsp;&nbsp;└─</span><span class="comp">&lt;TaskItem /&gt;</span><span class="desc">&nbsp;— toggle, edit, delete</span></div>
+                    <div class="tree-item tree-indent-2"><span class="tree-branch">└─</span><span class="comp">&lt;Footer /&gt;</span><span class="desc">&nbsp;— task count summary</span></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features" style="padding-top:0;">
+        <div class="container">
+            <h2>Key Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">⚛️</div>
+                    <h3>React 18 Hooks</h3>
+                    <p><code>useState</code>, <code>useEffect</code>, <code>useCallback</code>, and custom hooks keep every component lean and testable.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🗂️</div>
+                    <h3>Context + useReducer</h3>
+                    <p>Global task state managed with a reducer and dispatched through Context — no third-party state library needed.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💾</div>
+                    <h3>localStorage Persistence</h3>
+                    <p>A <code>usePersist</code> custom hook syncs state to <code>localStorage</code> so tasks survive refreshes.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔍</div>
+                    <h3>Filter & Search</h3>
+                    <p>Filter tasks by All / Active / Completed, plus a live search input that highlights matching text.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">✏️</div>
+                    <h3>Inline Editing</h3>
+                    <p>Click a task label to switch to an editable input in-place — no modal or separate edit page.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Vite Build</h3>
+                    <p>Instant dev HMR and an optimised production bundle with tree-shaking via Vite's Rollup pipeline.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Code Examples -->
+    <section id="code" style="padding-top:0;">
+        <div class="container">
+            <h2>Code Examples</h2>
+
+            <div class="code-section">
+                <div class="code-section-header">
+                    <h3>Task Context + useReducer</h3>
+                    <span class="code-lang">React / JSX</span>
+                </div>
+                <pre><code><span class="kw">import</span> { createContext, useContext, useReducer } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">const</span> <span class="cls">TaskContext</span> = <span class="fn">createContext</span>(<span class="kw">null</span>);
+
+<span class="kw">function</span> <span class="fn">taskReducer</span>(state, action) {
+    <span class="kw">switch</span> (action.type) {
+        <span class="kw">case</span> <span class="str">'ADD'</span>:
+            <span class="kw">return</span> [...state, { id: <span class="cls">Date</span>.<span class="fn">now</span>(), text: action.payload, done: <span class="kw">false</span> }];
+        <span class="kw">case</span> <span class="str">'TOGGLE'</span>:
+            <span class="kw">return</span> state.<span class="fn">map</span>(t => t.id === action.id ? { ...t, done: !t.done } : t);
+        <span class="kw">case</span> <span class="str">'DELETE'</span>:
+            <span class="kw">return</span> state.<span class="fn">filter</span>(t => t.id !== action.id);
+        <span class="kw">case</span> <span class="str">'EDIT'</span>:
+            <span class="kw">return</span> state.<span class="fn">map</span>(t => t.id === action.id ? { ...t, text: action.text } : t);
+        <span class="kw">default</span>: <span class="kw">return</span> state;
+    }
+}
+
+<span class="kw">export function</span> <span class="fn">TaskProvider</span>({ children }) {
+    <span class="kw">const</span> [tasks, dispatch] = <span class="fn">useReducer</span>(taskReducer, [], <span class="fn">init</span>);
+    <span class="kw">return</span> (
+        <span class="tag">&lt;TaskContext.Provider</span> <span class="attr">value</span>={{ tasks, dispatch }}<span class="tag">&gt;</span>
+            {children}
+        <span class="tag">&lt;/TaskContext.Provider&gt;</span>
+    );
+}
+
+<span class="kw">export const</span> <span class="fn">useTasks</span> = () => <span class="fn">useContext</span>(<span class="cls">TaskContext</span>);</code></pre>
+            </div>
+
+            <div class="code-section">
+                <div class="code-section-header">
+                    <h3>usePersist — localStorage Sync Hook</h3>
+                    <span class="code-lang">React / JSX</span>
+                </div>
+                <pre><code><span class="kw">import</span> { useEffect } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="cmt">/**
+ * Persists `value` to localStorage under `key` on every change.
+ * Pass as the `init` function to useReducer to hydrate on mount.
+ */</span>
+<span class="kw">export function</span> <span class="fn">usePersist</span>(key, value) {
+    <span class="fn">useEffect</span>(() => {
+        <span class="kw">try</span> {
+            <span class="cls">localStorage</span>.<span class="fn">setItem</span>(key, <span class="cls">JSON</span>.<span class="fn">stringify</span>(value));
+        } <span class="kw">catch</span> (e) {
+            <span class="cmt">// quota exceeded or private mode — fail silently</span>
+        }
+    }, [key, value]);
+}
+
+<span class="cmt">// Initialiser passed to useReducer — reads from storage once on mount</span>
+<span class="kw">function</span> <span class="fn">init</span>() {
+    <span class="kw">try</span> {
+        <span class="kw">const</span> stored = <span class="cls">localStorage</span>.<span class="fn">getItem</span>(<span class="str">'tasks'</span>);
+        <span class="kw">return</span> stored ? <span class="cls">JSON</span>.<span class="fn">parse</span>(stored) : [];
+    } <span class="kw">catch</span> { <span class="kw">return</span> []; }
+}</code></pre>
+            </div>
+
+            <div class="code-section">
+                <div class="code-section-header">
+                    <h3>TaskItem — Toggle, Edit, Delete</h3>
+                    <span class="code-lang">React / JSX</span>
+                </div>
+                <pre><code><span class="kw">export function</span> <span class="fn">TaskItem</span>({ task }) {
+    <span class="kw">const</span> { dispatch } = <span class="fn">useTasks</span>();
+    <span class="kw">const</span> [editing, setEditing] = <span class="fn">useState</span>(<span class="kw">false</span>);
+    <span class="kw">const</span> [draft, setDraft]     = <span class="fn">useState</span>(task.text);
+
+    <span class="kw">const</span> <span class="fn">commitEdit</span> = () => {
+        <span class="kw">if</span> (draft.<span class="fn">trim</span>()) dispatch({ type: <span class="str">'EDIT'</span>, id: task.id, text: draft.<span class="fn">trim</span>() });
+        <span class="fn">setEditing</span>(<span class="kw">false</span>);
+    };
+
+    <span class="kw">return</span> (
+        <span class="tag">&lt;li</span> <span class="attr">className</span>=<span class="str">{`task-item ${task.done ? 'done' : ''}`</span>}<span class="tag">&gt;</span>
+            <span class="tag">&lt;input</span> <span class="attr">type</span>=<span class="str">"checkbox"</span> <span class="attr">checked</span>={task.done}
+                   <span class="attr">onChange</span>={() => dispatch({ type: <span class="str">'TOGGLE'</span>, id: task.id })} <span class="tag">/&gt;</span>
+            {editing
+                ? <span class="tag">&lt;input</span> <span class="attr">value</span>={draft} <span class="attr">onChange</span>={e => <span class="fn">setDraft</span>(e.target.value)}
+                          <span class="attr">onBlur</span>={<span class="fn">commitEdit</span>} <span class="attr">onKeyDown</span>={e => e.key === <span class="str">'Enter'</span> &amp;&amp; <span class="fn">commitEdit</span>()} <span class="attr">autoFocus</span> <span class="tag">/&gt;</span>
+                : <span class="tag">&lt;span</span> <span class="attr">onDoubleClick</span>={() => <span class="fn">setEditing</span>(<span class="kw">true</span>)}<span class="tag">&gt;</span>{task.text}<span class="tag">&lt;/span&gt;</span>
+            }
+            <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => dispatch({ type: <span class="str">'DELETE'</span>, id: task.id })}<span class="tag">&gt;</span>✕<span class="tag">&lt;/button&gt;</span>
+        <span class="tag">&lt;/li&gt;</span>
+    );
+}</code></pre>
+            </div>
+        </div>
+    </section>
+
+    <section style="padding: 2rem 2rem 5rem;">
+        <div class="container cta-center">
+            <a href="index.html#projects" class="back-btn">← Back to Projects</a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Pramod Gautam. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const hamburger = document.querySelector('.hamburger');
+        const navMenu   = document.querySelector('nav ul');
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('open');
+            navMenu.classList.toggle('open');
+        });
+        navMenu.querySelectorAll('a').forEach(l => l.addEventListener('click', () => {
+            hamburger.classList.remove('open');
+            navMenu.classList.remove('open');
+        }));
+
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(e => { if (e.isIntersecting) { e.target.style.animation = 'slideUp 0.6s ease-out forwards'; observer.unobserve(e.target); } });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+        document.querySelectorAll('.feature-card').forEach(c => observer.observe(c));
+    </script>
+
+    <script data-goatcounter="https://pramodgautam.goatcounter.com/count" async src="count.js"></script>
+    <noscript>
+        <img src="https://pramodgautam.goatcounter.com/count?p=/react-project&t=React+Task+Manager" alt="" style="position:absolute;left:-9999px" />
+    </noscript>
+</body>
+</html>
