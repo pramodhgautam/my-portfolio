@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Nepali Viber Stickers</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            font-size: 2.2rem;
+            margin: 30px 0 10px;
+            background: linear-gradient(90deg, #e94560, #f5a623, #e94560);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle {
+            text-align: center;
+            color: #aaa;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+        .info-box {
+            max-width: 700px;
+            margin: 0 auto 30px;
+            background: rgba(255,255,255,0.07);
+            border-radius: 12px;
+            padding: 18px 24px;
+            border: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #ccc;
+        }
+        .info-box strong { color: #f5a623; }
+        .sticker-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px 0;
+        }
+        .sticker-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .sticker-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(233,69,96,0.15);
+        }
+        .sticker-card canvas {
+            border-radius: 12px;
+            max-width: 100%;
+            height: auto;
+            background: repeating-conic-gradient(#2a2a3e 0% 25%, #1e1e32 0% 50%) 0 0 / 20px 20px;
+        }
+        .sticker-label {
+            margin: 12px 0 6px;
+            font-size: 1.1rem;
+            color: #f5a623;
+        }
+        .sticker-meaning {
+            font-size: 0.85rem;
+            color: #888;
+            margin-bottom: 14px;
+        }
+        .download-btn {
+            display: inline-block;
+            padding: 10px 28px;
+            background: linear-gradient(135deg, #e94560, #c23152);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+        .download-btn:hover { opacity: 0.85; }
+        .download-all {
+            display: block;
+            width: fit-content;
+            margin: 30px auto;
+            padding: 14px 40px;
+            background: linear-gradient(135deg, #f5a623, #e94560);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .download-all:hover { opacity: 0.85; }
+        .viber-notes {
+            max-width: 700px;
+            margin: 40px auto;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 20px 24px;
+            border: 1px solid rgba(255,255,255,0.08);
+            font-size: 0.9rem;
+            color: #999;
+            line-height: 1.7;
+        }
+        .viber-notes h3 { color: #f5a623; margin-bottom: 10px; }
+        .viber-notes ul { padding-left: 20px; }
+        footer {
+            text-align: center;
+            padding: 40px 0 20px;
+            color: #555;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+<h1>🇳🇵 Free Nepali Viber Stickers</h1>
+<p class="subtitle">नेपाली भाइबर स्टिकर्स — Download &amp; Share!</p>
+
+<div class="info-box">
+    <strong>24 free Nepali stickers</strong> ready for Viber! Each sticker is <strong>490×490px PNG</strong> with transparent background — meets Viber Sticker Market requirements.
+    Download individually or all at once. Share them in your Viber groups!
+</div>
+
+<div class="sticker-grid" id="stickerGrid"></div>
+
+<button class="download-all" id="downloadAll">⬇ Download All 24 Stickers</button>
+
+<div class="sticker-grid" style="max-width:400px;">
+    <div class="sticker-card" id="trayCard">
+        <canvas id="trayIcon"></canvas>
+        <div class="sticker-label">Tray Icon (96×96px)</div>
+        <div class="sticker-meaning">Required by Viber for sticker pack thumbnail</div>
+        <button class="download-btn" id="downloadTray">⬇ Download Tray Icon</button>
+    </div>
+</div>
+
+<div class="viber-notes">
+    <h3>How to Submit to Viber Sticker Market</h3>
+    <ul>
+        <li>Go to <strong>Viber Sticker Market</strong> → create an artist account</li>
+        <li>Upload your sticker pack (minimum 24 stickers for official packs)</li>
+        <li>Each sticker: <strong>490×490px PNG</strong>, transparent background, under 500KB</li>
+        <li>Tray icon: <strong>96×96px PNG</strong></li>
+        <li>Set price to <strong>Free</strong> so everyone can use them!</li>
+        <li>You can also share individual sticker PNGs directly in Viber chats</li>
+    </ul>
+</div>
+
+<footer>Made with ❤️ by Pramod Gautam | Kathmandu, Nepal</footer>
+
+<script>
+const STICKER_SIZE = 490;
+
+const stickers = [
+    {
+        id: 'namaste',
+        text: 'नमस्ते',
+        meaning: 'Hello / Greetings',
+        emoji: '🙏',
+        bgColors: ['#FF6B6B', '#FF8E53'],
+        textColor: '#fff',
+        accentColor: '#FFD93D',
+        shape: 'circle'
+    },
+    {
+        id: 'dhanyabad',
+        text: 'धन्यवाद',
+        meaning: 'Thank You',
+        emoji: '🌸',
+        bgColors: ['#A855F7', '#7C3AED'],
+        textColor: '#fff',
+        accentColor: '#F0ABFC',
+        shape: 'rounded'
+    },
+    {
+        id: 'ke-chha',
+        text: 'के छ?',
+        meaning: "What's up?",
+        emoji: '👋',
+        bgColors: ['#06B6D4', '#0891B2'],
+        textColor: '#fff',
+        accentColor: '#67E8F9',
+        shape: 'blob'
+    },
+    {
+        id: 'maja-aayo',
+        text: 'मजा आयो!',
+        meaning: 'Had fun! / Enjoyed it!',
+        emoji: '🎉',
+        bgColors: ['#F59E0B', '#D97706'],
+        textColor: '#fff',
+        accentColor: '#FDE68A',
+        shape: 'star'
+    },
+    {
+        id: 'ramro',
+        text: 'राम्रो!',
+        meaning: 'Nice / Good!',
+        emoji: '✨',
+        bgColors: ['#10B981', '#059669'],
+        textColor: '#fff',
+        accentColor: '#6EE7B7',
+        shape: 'heart'
+    },
+    {
+        id: 'haha',
+        text: 'हाहा',
+        meaning: 'Haha / LOL',
+        emoji: '😂',
+        bgColors: ['#EC4899', '#DB2777'],
+        textColor: '#fff',
+        accentColor: '#FBCFE8',
+        shape: 'burst'
+    },
+    {
+        id: 'maaf-garnus',
+        text: 'माफ गर्नुस्',
+        meaning: 'Sorry / Excuse me',
+        emoji: '😔',
+        bgColors: ['#6366F1', '#4F46E5'],
+        textColor: '#fff',
+        accentColor: '#C7D2FE',
+        shape: 'circle'
+    },
+    {
+        id: 'mitho',
+        text: 'मिठो!',
+        meaning: 'Delicious!',
+        emoji: '😋',
+        bgColors: ['#F97316', '#EA580C'],
+        textColor: '#fff',
+        accentColor: '#FED7AA',
+        shape: 'rounded'
+    },
+    {
+        id: 'badhai-chha',
+        text: 'बधाई छ!',
+        meaning: 'Congratulations!',
+        emoji: '🎊',
+        bgColors: ['#EAB308', '#CA8A04'],
+        textColor: '#fff',
+        accentColor: '#FEF08A',
+        shape: 'star'
+    },
+    {
+        id: 'maya',
+        text: 'माया',
+        meaning: 'Love',
+        emoji: '❤️',
+        bgColors: ['#E11D48', '#BE123C'],
+        textColor: '#fff',
+        accentColor: '#FDA4AF',
+        shape: 'heart'
+    },
+    {
+        id: 'subha-prabhat',
+        text: 'शुभ प्रभात',
+        meaning: 'Good Morning',
+        emoji: '🌅',
+        bgColors: ['#F59E0B', '#F97316'],
+        textColor: '#fff',
+        accentColor: '#FDE68A',
+        shape: 'blob'
+    },
+    {
+        id: 'shubha-ratri',
+        text: 'शुभ रात्री',
+        meaning: 'Good Night',
+        emoji: '🌙',
+        bgColors: ['#1E3A5F', '#0F172A'],
+        textColor: '#fff',
+        accentColor: '#7DD3FC',
+        shape: 'circle'
+    },
+    {
+        id: 'hajur',
+        text: 'हजुर',
+        meaning: 'Yes (Respectful)',
+        emoji: '🙂',
+        bgColors: ['#14B8A6', '#0D9488'],
+        textColor: '#fff',
+        accentColor: '#99F6E4',
+        shape: 'rounded'
+    },
+    {
+        id: 'hoina',
+        text: 'होइन',
+        meaning: 'No',
+        emoji: '🙅',
+        bgColors: ['#EF4444', '#DC2626'],
+        textColor: '#fff',
+        accentColor: '#FCA5A5',
+        shape: 'burst'
+    },
+    {
+        id: 'kasto-chha',
+        text: 'कस्तो छ?',
+        meaning: 'How are you?',
+        emoji: '🤗',
+        bgColors: ['#8B5CF6', '#7C3AED'],
+        textColor: '#fff',
+        accentColor: '#DDD6FE',
+        shape: 'blob'
+    },
+    {
+        id: 'thik-chha',
+        text: 'ठिक छ',
+        meaning: "It's OK / I'm fine",
+        emoji: '👍',
+        bgColors: ['#22C55E', '#16A34A'],
+        textColor: '#fff',
+        accentColor: '#BBF7D0',
+        shape: 'circle'
+    },
+    {
+        id: 'ek-chin',
+        text: 'एक छिन',
+        meaning: 'One moment / Wait',
+        emoji: '⏳',
+        bgColors: ['#64748B', '#475569'],
+        textColor: '#fff',
+        accentColor: '#CBD5E1',
+        shape: 'rounded'
+    },
+    {
+        id: 'bhetaula',
+        text: 'भेटौंला!',
+        meaning: 'See you!',
+        emoji: '👋',
+        bgColors: ['#0EA5E9', '#0284C7'],
+        textColor: '#fff',
+        accentColor: '#BAE6FD',
+        shape: 'star'
+    },
+    {
+        id: 'dherai-ramro',
+        text: 'धेरै राम्रो!',
+        meaning: 'Very good!',
+        emoji: '🌟',
+        bgColors: ['#84CC16', '#65A30D'],
+        textColor: '#fff',
+        accentColor: '#D9F99D',
+        shape: 'heart'
+    },
+    {
+        id: 'chito-garnus',
+        text: 'चिटो गर्नुस्!',
+        meaning: 'Hurry up!',
+        emoji: '🏃',
+        bgColors: ['#F43F5E', '#E11D48'],
+        textColor: '#fff',
+        accentColor: '#FECDD3',
+        shape: 'burst'
+    },
+    {
+        id: 'dashain-ko-shubhakamana',
+        text: 'दशैंको शुभकामना',
+        meaning: 'Happy Dashain!',
+        emoji: '🪔',
+        bgColors: ['#DC2626', '#B91C1C'],
+        textColor: '#fff',
+        accentColor: '#FCA5A5',
+        shape: 'blob'
+    },
+    {
+        id: 'tihar-ko-shubhakamana',
+        text: 'तिहारको शुभकामना',
+        meaning: 'Happy Tihar!',
+        emoji: '🎆',
+        bgColors: ['#D946EF', '#A21CAF'],
+        textColor: '#fff',
+        accentColor: '#F5D0FE',
+        shape: 'circle'
+    },
+    {
+        id: 'naya-barsha',
+        text: 'नयाँ वर्षको शुभकामना',
+        meaning: 'Happy New Year!',
+        emoji: '🎉',
+        bgColors: ['#7C3AED', '#6D28D9'],
+        textColor: '#fff',
+        accentColor: '#DDD6FE',
+        shape: 'star'
+    },
+    {
+        id: 'sabai-lai-namaste',
+        text: 'सबैलाई नमस्ते',
+        meaning: 'Hello Everyone',
+        emoji: '🙏',
+        bgColors: ['#2563EB', '#1D4ED8'],
+        textColor: '#fff',
+        accentColor: '#BFDBFE',
+        shape: 'rounded'
+    },
+    {
+        id: 'khana-khayau',
+        text: 'खाना खायौ?',
+        meaning: 'Did you eat?',
+        emoji: '🍛',
+        bgColors: ['#EA580C', '#C2410C'],
+        textColor: '#fff',
+        accentColor: '#FDBA74',
+        shape: 'blob'
+    },
+    {
+        id: 'jai-nepal',
+        text: 'जय नेपाल!',
+        meaning: 'Glory to Nepal!',
+        emoji: '🇳🇵',
+        bgColors: ['#DC2626', '#1D4ED8'],
+        textColor: '#fff',
+        accentColor: '#FDE68A',
+        shape: 'heart'
+    },
+    {
+        id: 'kaha-ho',
+        text: 'कहाँ हो?',
+        meaning: 'Where are you?',
+        emoji: '📍',
+        bgColors: ['#0891B2', '#0E7490'],
+        textColor: '#fff',
+        accentColor: '#A5F3FC',
+        shape: 'burst'
+    },
+    {
+        id: 'malai-man-paryo',
+        text: 'मलाई मन पर्यो!',
+        meaning: 'I liked it!',
+        emoji: '😍',
+        bgColors: ['#BE185D', '#9D174D'],
+        textColor: '#fff',
+        accentColor: '#FBCFE8',
+        shape: 'circle'
+    },
+    {
+        id: 'lau-hai',
+        text: 'लौ है!',
+        meaning: 'Oh come on! / Here we go!',
+        emoji: '🤷',
+        bgColors: ['#9333EA', '#7E22CE'],
+        textColor: '#fff',
+        accentColor: '#E9D5FF',
+        shape: 'rounded'
+    }
+];
+
+function drawShape(ctx, shape, cx, cy, size) {
+    const r = size / 2;
+    ctx.beginPath();
+
+    switch(shape) {
+        case 'circle':
+            ctx.arc(cx, cy, r - 20, 0, Math.PI * 2);
+            break;
+
+        case 'rounded':
+            roundedRect(ctx, cx - r + 20, cy - r + 20, size - 40, size - 40, 50);
+            break;
+
+        case 'blob':
+            drawBlob(ctx, cx, cy, r - 25);
+            break;
+
+        case 'star':
+            drawRoundedStar(ctx, cx, cy, r - 30, r - 70, 6);
+            break;
+
+        case 'heart':
+            drawHeart(ctx, cx, cy, r - 30);
+            break;
+
+        case 'burst':
+            drawBurst(ctx, cx, cy, r - 25, r - 60, 12);
+            break;
+    }
+}
+
+function roundedRect(ctx, x, y, w, h, radius) {
+    ctx.moveTo(x + radius, y);
+    ctx.lineTo(x + w - radius, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + radius);
+    ctx.lineTo(x + w, y + h - radius);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - radius, y + h);
+    ctx.lineTo(x + radius, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - radius);
+    ctx.lineTo(x, y + radius);
+    ctx.quadraticCurveTo(x, y, x + radius, y);
+    ctx.closePath();
+}
+
+function drawBlob(ctx, cx, cy, r) {
+    const points = 8;
+    const angleStep = (Math.PI * 2) / points;
+    const variation = r * 0.12;
+    ctx.moveTo(cx + r + variation * Math.sin(0), cy);
+    for (let i = 1; i <= points; i++) {
+        const angle = i * angleStep;
+        const prevAngle = (i - 1) * angleStep;
+        const midAngle = (prevAngle + angle) / 2;
+        const cpR = r + variation * Math.sin(midAngle * 3);
+        const px = cx + (r + variation * Math.sin(angle * 2)) * Math.cos(angle);
+        const py = cy + (r + variation * Math.sin(angle * 2)) * Math.sin(angle);
+        const cpx = cx + cpR * Math.cos(midAngle);
+        const cpy = cy + cpR * Math.sin(midAngle);
+        ctx.quadraticCurveTo(cpx, cpy, px, py);
+    }
+    ctx.closePath();
+}
+
+function drawRoundedStar(ctx, cx, cy, outerR, innerR, points) {
+    const step = Math.PI / points;
+    ctx.moveTo(cx, cy - outerR);
+    for (let i = 0; i < 2 * points; i++) {
+        const r = i % 2 === 0 ? outerR : innerR;
+        const angle = i * step - Math.PI / 2;
+        ctx.lineTo(cx + r * Math.cos(angle), cy + r * Math.sin(angle));
+    }
+    ctx.closePath();
+}
+
+function drawHeart(ctx, cx, cy, size) {
+    const x = cx, y = cy + size * 0.1;
+    ctx.moveTo(x, y - size * 0.4);
+    ctx.bezierCurveTo(x - size * 0.02, y - size * 0.9, x - size * 0.9, y - size * 0.6, x, y + size * 0.5);
+    ctx.moveTo(x, y - size * 0.4);
+    ctx.bezierCurveTo(x + size * 0.02, y - size * 0.9, x + size * 0.9, y - size * 0.6, x, y + size * 0.5);
+    ctx.closePath();
+}
+
+function drawBurst(ctx, cx, cy, outerR, innerR, points) {
+    const step = Math.PI / points;
+    ctx.moveTo(cx, cy - outerR);
+    for (let i = 0; i < 2 * points; i++) {
+        const r = i % 2 === 0 ? outerR : innerR;
+        const angle = i * step - Math.PI / 2;
+        ctx.lineTo(cx + r * Math.cos(angle), cy + r * Math.sin(angle));
+    }
+    ctx.closePath();
+}
+
+function drawDecorations(ctx, shape, cx, cy, size, accentColor) {
+    ctx.save();
+    ctx.fillStyle = accentColor;
+    ctx.globalAlpha = 0.3;
+
+    // Small circles around
+    for (let i = 0; i < 8; i++) {
+        const angle = (i / 8) * Math.PI * 2;
+        const dist = size / 2 + 15;
+        const dotSize = 4 + Math.random() * 6;
+        ctx.beginPath();
+        ctx.arc(
+            cx + dist * Math.cos(angle),
+            cy + dist * Math.sin(angle),
+            dotSize, 0, Math.PI * 2
+        );
+        ctx.fill();
+    }
+
+    // Sparkle dots
+    ctx.globalAlpha = 0.2;
+    for (let i = 0; i < 12; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const dist = size * 0.2 + Math.random() * size * 0.35;
+        const dotSize = 2 + Math.random() * 4;
+        ctx.beginPath();
+        ctx.arc(
+            cx + dist * Math.cos(angle),
+            cy + dist * Math.sin(angle),
+            dotSize, 0, Math.PI * 2
+        );
+        ctx.fill();
+    }
+
+    ctx.restore();
+}
+
+function drawSticker(canvas, sticker) {
+    const size = STICKER_SIZE;
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext('2d');
+    const cx = size / 2;
+    const cy = size / 2;
+
+    // Clear to transparent
+    ctx.clearRect(0, 0, size, size);
+
+    // Draw shadow
+    ctx.save();
+    ctx.shadowColor = 'rgba(0,0,0,0.25)';
+    ctx.shadowBlur = 20;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 8;
+
+    // Draw shape with gradient fill
+    drawShape(ctx, sticker.shape, cx, cy, size);
+    const grad = ctx.createLinearGradient(0, 0, size, size);
+    grad.addColorStop(0, sticker.bgColors[0]);
+    grad.addColorStop(1, sticker.bgColors[1]);
+    ctx.fillStyle = grad;
+    ctx.fill();
+    ctx.restore();
+
+    // Shape outline
+    drawShape(ctx, sticker.shape, cx, cy, size);
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    // Inner decorations
+    drawDecorations(ctx, sticker.shape, cx, cy, size, sticker.accentColor);
+
+    // Emoji at top
+    ctx.save();
+    ctx.font = '72px serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(sticker.emoji, cx, cy - 80);
+    ctx.restore();
+
+    // Main Nepali text — auto-size to fit
+    ctx.save();
+    const maxTextWidth = size * 0.7;
+    let fontSize = 80;
+    ctx.font = 'bold ' + fontSize + 'px "Noto Sans Devanagari", "Mangal", sans-serif';
+    while (ctx.measureText(sticker.text).width > maxTextWidth && fontSize > 30) {
+        fontSize -= 2;
+        ctx.font = 'bold ' + fontSize + 'px "Noto Sans Devanagari", "Mangal", sans-serif';
+    }
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    // Text shadow
+    ctx.shadowColor = 'rgba(0,0,0,0.3)';
+    ctx.shadowBlur = 8;
+    ctx.shadowOffsetX = 2;
+    ctx.shadowOffsetY = 2;
+
+    // White text outline
+    ctx.strokeStyle = 'rgba(0,0,0,0.2)';
+    ctx.lineWidth = 6;
+    ctx.strokeText(sticker.text, cx, cy + 30);
+
+    ctx.fillStyle = sticker.textColor;
+    ctx.fillText(sticker.text, cx, cy + 30);
+    ctx.restore();
+
+    // Small decorative line under text
+    ctx.save();
+    ctx.strokeStyle = sticker.accentColor;
+    ctx.lineWidth = 3;
+    ctx.globalAlpha = 0.6;
+    ctx.beginPath();
+    const lineW = ctx.measureText(sticker.text).width * 0.3;
+    ctx.moveTo(cx - lineW, cy + 80);
+    ctx.lineTo(cx + lineW, cy + 80);
+    ctx.stroke();
+    ctx.restore();
+
+    // Bottom sparkle emoji
+    ctx.save();
+    ctx.font = '36px serif';
+    ctx.textAlign = 'center';
+    ctx.globalAlpha = 0.8;
+    ctx.fillText('✦', cx - 50, cy + 115);
+    ctx.fillText('✦', cx + 50, cy + 115);
+    ctx.restore();
+}
+
+function downloadSticker(canvas, filename) {
+    const link = document.createElement('a');
+    link.download = filename + '.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+}
+
+function init() {
+    const grid = document.getElementById('stickerGrid');
+
+    stickers.forEach(sticker => {
+        const card = document.createElement('div');
+        card.className = 'sticker-card';
+
+        const canvas = document.createElement('canvas');
+        canvas.id = 'sticker-' + sticker.id;
+        drawSticker(canvas, sticker);
+
+        const label = document.createElement('div');
+        label.className = 'sticker-label';
+        label.textContent = sticker.text + ' ' + sticker.emoji;
+
+        const meaning = document.createElement('div');
+        meaning.className = 'sticker-meaning';
+        meaning.textContent = sticker.meaning;
+
+        const btn = document.createElement('button');
+        btn.className = 'download-btn';
+        btn.textContent = '⬇ Download PNG';
+        btn.addEventListener('click', function() {
+            downloadSticker(canvas, 'nepali-sticker-' + sticker.id);
+        });
+
+        card.appendChild(canvas);
+        card.appendChild(label);
+        card.appendChild(meaning);
+        card.appendChild(btn);
+        grid.appendChild(card);
+    });
+
+    // Download all
+    document.getElementById('downloadAll').addEventListener('click', function() {
+        stickers.forEach((sticker, i) => {
+            setTimeout(function() {
+                const canvas = document.getElementById('sticker-' + sticker.id);
+                downloadSticker(canvas, 'nepali-sticker-' + sticker.id);
+            }, i * 300);
+        });
+    });
+
+    // Draw tray icon (96x96)
+    const tray = document.getElementById('trayIcon');
+    tray.width = 96;
+    tray.height = 96;
+    const tctx = tray.getContext('2d');
+    const tGrad = tctx.createLinearGradient(0, 0, 96, 96);
+    tGrad.addColorStop(0, '#E94560');
+    tGrad.addColorStop(1, '#F5A623');
+    tctx.beginPath();
+    tctx.arc(48, 48, 44, 0, Math.PI * 2);
+    tctx.fillStyle = tGrad;
+    tctx.fill();
+    tctx.strokeStyle = 'rgba(255,255,255,0.3)';
+    tctx.lineWidth = 2;
+    tctx.stroke();
+    tctx.font = '28px serif';
+    tctx.textAlign = 'center';
+    tctx.textBaseline = 'middle';
+    tctx.fillText('🇳🇵', 48, 30);
+    tctx.font = 'bold 18px "Noto Sans Devanagari", "Mangal", sans-serif';
+    tctx.fillStyle = '#fff';
+    tctx.fillText('नमस्ते', 48, 60);
+
+    document.getElementById('downloadTray').addEventListener('click', function() {
+        downloadSticker(tray, 'tray-icon-96x96');
+    });
+}
+
+// Load Noto Sans Devanagari for proper Nepali text rendering
+const fontLink = document.createElement('link');
+fontLink.rel = 'stylesheet';
+fontLink.href = 'https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;700&display=swap';
+document.head.appendChild(fontLink);
+
+// Wait for font to load, then draw
+document.fonts ? document.fonts.ready.then(init) : window.addEventListener('load', init);
+</script>
+</body>
+</html>
